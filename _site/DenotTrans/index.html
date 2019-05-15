@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DenotTrans: Denotational Transitivity | Programming Language Foundations in Agda
+</title><!-- Begin Jekyll SEO tag v2.5.0 -->
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="DenotTrans: Denotational Transitivity" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Programming Language Foundations in Agda" />
+<meta property="og:description" content="Programming Language Foundations in Agda" />
+<link rel="canonical" href="https://plfa.github.io/DenotTrans/" />
+<meta property="og:url" content="https://plfa.github.io/DenotTrans/" />
+<meta property="og:site_name" content="Programming Language Foundations in Agda" />
+<script type="application/ld+json">
+{"description":"Programming Language Foundations in Agda","@type":"WebPage","url":"https://plfa.github.io/DenotTrans/","headline":"DenotTrans: Denotational Transitivity","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"></head>
+<body><header class="site-header" role="banner">
+
+    <div class="wrapper">
+
+        <a class="site-title" href="/">Programming Language Foundations in Agda
+</a>
+
+        <nav class="site-nav">
+            <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                    <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+                    <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+                    <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+                </svg>
+            </span>
+
+            <div class="trigger">
+                <a class="page-link" href="/">Table of Contents</a>
+                <a class="page-link" href="/GettingStarted/">Getting Started</a>
+            </div>
+        </nav>
+
+    </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+      <h1 class="post-title">DenotTrans: Denotational Transitivity</h1>
+  </header>
+
+  <p style="text-align:center;">
+    
+    
+    <a alt="Source code" href="https://github.com/plfa/plfa.github.io/blob/dev/src/plfa/DenotTrans.lagda">Source</a>
+    
+    
+</p>
+
+
+  <div class="post-content">
+    <p>An attempt to reformulate the domain order so that transitivity is
+admissible.  It doesn’t quite work.</p>
+
+<pre class="Agda"><a id="221" class="Keyword">module</a> <a id="228" href="/DenotTrans/" class="Module">plfa.DenotTrans</a> <a id="244" class="Keyword">where</a></pre>
+
+<h2 id="values">Values</h2>
+
+<pre class="Agda"><a id="286" class="Keyword">infixr</a> <a id="293" class="Number">7</a> <a id="295" href="/DenotTrans/#350" class="InductiveConstructor Operator">_↦_</a>
+<a id="299" class="Keyword">infixl</a> <a id="306" class="Number">5</a> <a id="308" href="/DenotTrans/#380" class="InductiveConstructor Operator">_⊔_</a>
+
+<a id="313" class="Keyword">data</a> <a id="Value"></a><a id="318" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="324" class="Symbol">:</a> <a id="326" class="PrimitiveType">Set</a> <a id="330" class="Keyword">where</a>
+  <a id="Value.⊥"></a><a id="338" href="/DenotTrans/#338" class="InductiveConstructor">⊥</a> <a id="340" class="Symbol">:</a> <a id="342" href="/DenotTrans/#318" class="Datatype">Value</a>
+  <a id="Value._↦_"></a><a id="350" href="/DenotTrans/#350" class="InductiveConstructor Operator">_↦_</a> <a id="354" class="Symbol">:</a> <a id="356" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="362" class="Symbol">→</a> <a id="364" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="370" class="Symbol">→</a> <a id="372" href="/DenotTrans/#318" class="Datatype">Value</a>
+  <a id="Value._⊔_"></a><a id="380" href="/DenotTrans/#380" class="InductiveConstructor Operator">_⊔_</a> <a id="384" class="Symbol">:</a> <a id="386" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="392" class="Symbol">→</a> <a id="394" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="400" class="Symbol">→</a> <a id="402" href="/DenotTrans/#318" class="Datatype">Value</a></pre>
+
+<h2 id="domain-order">Domain order</h2>
+
+<pre class="Agda"><a id="450" class="Keyword">infix</a> <a id="456" class="Number">4</a> <a id="458" href="/DenotTrans/#468" class="Datatype Operator">_⊑_</a>
+
+<a id="463" class="Keyword">data</a> <a id="_⊑_"></a><a id="468" href="/DenotTrans/#468" class="Datatype Operator">_⊑_</a> <a id="472" class="Symbol">:</a> <a id="474" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="480" class="Symbol">→</a> <a id="482" href="/DenotTrans/#318" class="Datatype">Value</a> <a id="488" class="Symbol">→</a> <a id="490" class="PrimitiveType">Set</a> <a id="494" class="Keyword">where</a>
+
+  <a id="_⊑_.Bot⊑"></a><a id="503" href="/DenotTrans/#503" class="InductiveConstructor">Bot⊑</a> <a id="508" class="Symbol">:</a> <a id="510" class="Symbol">∀</a> <a id="512" class="Symbol">{</a><a id="513" href="/DenotTrans/#513" class="Bound">v</a><a id="514" class="Symbol">}</a> <a id="516" class="Symbol">→</a>
+    <a id="522" class="Comment">-----</a>
+    <a id="532" href="/DenotTrans/#338" class="InductiveConstructor">⊥</a> <a id="534" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="536" href="/DenotTrans/#513" class="Bound">v</a>
+
+  <a id="_⊑_.ConjL⊑"></a><a id="541" href="/DenotTrans/#541" class="InductiveConstructor">ConjL⊑</a> <a id="548" class="Symbol">:</a> <a id="550" class="Symbol">∀</a> <a id="552" class="Symbol">{</a><a id="553" href="/DenotTrans/#553" class="Bound">u</a> <a id="555" href="/DenotTrans/#555" class="Bound">v</a> <a id="557" href="/DenotTrans/#557" class="Bound">w</a><a id="558" class="Symbol">}</a>
+    <a id="564" class="Symbol">→</a> <a id="566" href="/DenotTrans/#553" class="Bound">u</a> <a id="568" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="570" href="/DenotTrans/#557" class="Bound">w</a>
+    <a id="576" class="Symbol">→</a> <a id="578" href="/DenotTrans/#555" class="Bound">v</a> <a id="580" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="582" href="/DenotTrans/#557" class="Bound">w</a>
+      <a id="590" class="Comment">-----------</a>
+    <a id="606" class="Symbol">→</a> <a id="608" class="Symbol">(</a><a id="609" href="/DenotTrans/#553" class="Bound">u</a> <a id="611" href="/DenotTrans/#380" class="InductiveConstructor Operator">⊔</a> <a id="613" href="/DenotTrans/#555" class="Bound">v</a><a id="614" class="Symbol">)</a> <a id="616" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="618" href="/DenotTrans/#557" class="Bound">w</a>
+
+  <a id="_⊑_.ConjR1⊑"></a><a id="623" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="631" class="Symbol">:</a> <a id="633" class="Symbol">∀</a> <a id="635" class="Symbol">{</a><a id="636" href="/DenotTrans/#636" class="Bound">u</a> <a id="638" href="/DenotTrans/#638" class="Bound">v</a> <a id="640" href="/DenotTrans/#640" class="Bound">w</a><a id="641" class="Symbol">}</a>
+    <a id="647" class="Symbol">→</a> <a id="649" href="/DenotTrans/#636" class="Bound">u</a> <a id="651" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="653" href="/DenotTrans/#638" class="Bound">v</a>
+      <a id="661" class="Comment">-----------</a>
+    <a id="677" class="Symbol">→</a> <a id="679" href="/DenotTrans/#636" class="Bound">u</a> <a id="681" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="683" class="Symbol">(</a><a id="684" href="/DenotTrans/#638" class="Bound">v</a> <a id="686" href="/DenotTrans/#380" class="InductiveConstructor Operator">⊔</a> <a id="688" href="/DenotTrans/#640" class="Bound">w</a><a id="689" class="Symbol">)</a>
+
+  <a id="_⊑_.ConjR2⊑"></a><a id="694" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="702" class="Symbol">:</a> <a id="704" class="Symbol">∀</a> <a id="706" class="Symbol">{</a><a id="707" href="/DenotTrans/#707" class="Bound">u</a> <a id="709" href="/DenotTrans/#709" class="Bound">v</a> <a id="711" href="/DenotTrans/#711" class="Bound">w</a><a id="712" class="Symbol">}</a>
+    <a id="718" class="Symbol">→</a> <a id="720" href="/DenotTrans/#707" class="Bound">u</a> <a id="722" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="724" href="/DenotTrans/#711" class="Bound">w</a>
+      <a id="732" class="Comment">-----------</a>
+    <a id="748" class="Symbol">→</a> <a id="750" href="/DenotTrans/#707" class="Bound">u</a> <a id="752" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="754" class="Symbol">(</a><a id="755" href="/DenotTrans/#709" class="Bound">v</a> <a id="757" href="/DenotTrans/#380" class="InductiveConstructor Operator">⊔</a> <a id="759" href="/DenotTrans/#711" class="Bound">w</a><a id="760" class="Symbol">)</a>
+
+  <a id="_⊑_.Fun⊑"></a><a id="765" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="770" class="Symbol">:</a> <a id="772" class="Symbol">∀</a> <a id="774" class="Symbol">{</a><a id="775" href="/DenotTrans/#775" class="Bound">u</a> <a id="777" href="/DenotTrans/#777" class="Bound">u′</a> <a id="780" href="/DenotTrans/#780" class="Bound">v</a> <a id="782" href="/DenotTrans/#782" class="Bound">v′</a><a id="784" class="Symbol">}</a>
+       <a id="793" class="Symbol">→</a> <a id="795" href="/DenotTrans/#777" class="Bound">u′</a> <a id="798" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="800" href="/DenotTrans/#775" class="Bound">u</a>
+       <a id="809" class="Symbol">→</a> <a id="811" href="/DenotTrans/#780" class="Bound">v</a> <a id="813" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="815" href="/DenotTrans/#782" class="Bound">v′</a>
+         <a id="827" class="Comment">-------------------</a>
+       <a id="854" class="Symbol">→</a> <a id="856" class="Symbol">(</a><a id="857" href="/DenotTrans/#775" class="Bound">u</a> <a id="859" href="/DenotTrans/#350" class="InductiveConstructor Operator">↦</a> <a id="861" href="/DenotTrans/#780" class="Bound">v</a><a id="862" class="Symbol">)</a> <a id="864" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="866" class="Symbol">(</a><a id="867" href="/DenotTrans/#777" class="Bound">u′</a> <a id="870" href="/DenotTrans/#350" class="InductiveConstructor Operator">↦</a> <a id="872" href="/DenotTrans/#782" class="Bound">v′</a><a id="874" class="Symbol">)</a>
+
+  <a id="_⊑_.Dist⊑"></a><a id="879" href="/DenotTrans/#879" class="InductiveConstructor">Dist⊑</a> <a id="885" class="Symbol">:</a> <a id="887" class="Symbol">∀{</a><a id="889" href="/DenotTrans/#889" class="Bound">t</a> <a id="891" href="/DenotTrans/#891" class="Bound">u</a> <a id="893" href="/DenotTrans/#893" class="Bound">v</a> <a id="895" href="/DenotTrans/#895" class="Bound">w</a><a id="896" class="Symbol">}</a>
+       <a id="905" class="Symbol">→</a> <a id="907" href="/DenotTrans/#889" class="Bound">t</a> <a id="909" href="/DenotTrans/#350" class="InductiveConstructor Operator">↦</a> <a id="911" href="/DenotTrans/#891" class="Bound">u</a> <a id="913" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="915" href="/DenotTrans/#895" class="Bound">w</a>
+       <a id="924" class="Symbol">→</a> <a id="926" href="/DenotTrans/#889" class="Bound">t</a> <a id="928" href="/DenotTrans/#350" class="InductiveConstructor Operator">↦</a> <a id="930" href="/DenotTrans/#893" class="Bound">v</a> <a id="932" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="934" href="/DenotTrans/#895" class="Bound">w</a>
+         <a id="945" class="Comment">---------------</a>
+       <a id="968" class="Symbol">→</a> <a id="970" href="/DenotTrans/#889" class="Bound">t</a> <a id="972" href="/DenotTrans/#350" class="InductiveConstructor Operator">↦</a> <a id="974" class="Symbol">(</a><a id="975" href="/DenotTrans/#891" class="Bound">u</a> <a id="977" href="/DenotTrans/#380" class="InductiveConstructor Operator">⊔</a> <a id="979" href="/DenotTrans/#893" class="Bound">v</a><a id="980" class="Symbol">)</a> <a id="982" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="984" href="/DenotTrans/#895" class="Bound">w</a></pre>
+
+<p>This relation is reflexive and transitive.</p>
+<pre class="Agda"><a id="refl⊑"></a><a id="1054" href="/DenotTrans/#1054" class="Function">refl⊑</a> <a id="1060" class="Symbol">:</a> <a id="1062" class="Symbol">∀</a> <a id="1064" class="Symbol">{</a><a id="1065" href="/DenotTrans/#1065" class="Bound">v</a><a id="1066" class="Symbol">}</a> <a id="1068" class="Symbol">→</a> <a id="1070" href="/DenotTrans/#1065" class="Bound">v</a> <a id="1072" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="1074" href="/DenotTrans/#1065" class="Bound">v</a>
+<a id="1076" href="/DenotTrans/#1054" class="Function">refl⊑</a> <a id="1082" class="Symbol">{</a><a id="1083" href="/DenotTrans/#338" class="InductiveConstructor">⊥</a><a id="1084" class="Symbol">}</a> <a id="1086" class="Symbol">=</a> <a id="1088" href="/DenotTrans/#503" class="InductiveConstructor">Bot⊑</a>
+<a id="1093" href="/DenotTrans/#1054" class="Function">refl⊑</a> <a id="1099" class="Symbol">{</a><a id="1100" href="/DenotTrans/#1100" class="Bound">v</a> <a id="1102" href="/DenotTrans/#350" class="InductiveConstructor Operator">↦</a> <a id="1104" href="/DenotTrans/#1104" class="Bound">w</a><a id="1105" class="Symbol">}</a> <a id="1107" class="Symbol">=</a> <a id="1109" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1114" href="/DenotTrans/#1054" class="Function">refl⊑</a> <a id="1120" href="/DenotTrans/#1054" class="Function">refl⊑</a>
+<a id="1126" href="/DenotTrans/#1054" class="Function">refl⊑</a> <a id="1132" class="Symbol">{</a><a id="1133" href="/DenotTrans/#1133" class="Bound">v</a> <a id="1135" href="/DenotTrans/#380" class="InductiveConstructor Operator">⊔</a> <a id="1137" href="/DenotTrans/#1137" class="Bound">w</a><a id="1138" class="Symbol">}</a> <a id="1140" class="Symbol">=</a> <a id="1142" href="/DenotTrans/#541" class="InductiveConstructor">ConjL⊑</a> <a id="1149" class="Symbol">(</a><a id="1150" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1158" href="/DenotTrans/#1054" class="Function">refl⊑</a><a id="1163" class="Symbol">)</a> <a id="1165" class="Symbol">(</a><a id="1166" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1174" href="/DenotTrans/#1054" class="Function">refl⊑</a><a id="1179" class="Symbol">)</a>
+
+<a id="trans⊑"></a><a id="1182" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1189" class="Symbol">:</a> <a id="1191" class="Symbol">∀</a> <a id="1193" class="Symbol">{</a><a id="1194" href="/DenotTrans/#1194" class="Bound">u</a> <a id="1196" href="/DenotTrans/#1196" class="Bound">v</a> <a id="1198" href="/DenotTrans/#1198" class="Bound">w</a><a id="1199" class="Symbol">}</a>
+     <a id="1206" class="Symbol">→</a> <a id="1208" href="/DenotTrans/#1194" class="Bound">u</a> <a id="1210" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="1212" href="/DenotTrans/#1196" class="Bound">v</a>
+     <a id="1219" class="Symbol">→</a> <a id="1221" href="/DenotTrans/#1196" class="Bound">v</a> <a id="1223" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="1225" href="/DenotTrans/#1198" class="Bound">w</a>
+       <a id="1234" class="Comment">--------</a>
+     <a id="1248" class="Symbol">→</a> <a id="1250" href="/DenotTrans/#1194" class="Bound">u</a> <a id="1252" href="/DenotTrans/#468" class="Datatype Operator">⊑</a> <a id="1254" href="/DenotTrans/#1198" class="Bound">w</a>
+<a id="1256" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1263" href="/DenotTrans/#503" class="InductiveConstructor">Bot⊑</a> <a id="1268" href="/DenotTrans/#1268" class="Bound">vw</a> <a id="1271" class="Symbol">=</a> <a id="1273" href="/DenotTrans/#503" class="InductiveConstructor">Bot⊑</a>
+<a id="1278" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1285" class="Symbol">(</a><a id="1286" href="/DenotTrans/#541" class="InductiveConstructor">ConjL⊑</a> <a id="1293" href="/DenotTrans/#1293" class="Bound">tv</a> <a id="1296" href="/DenotTrans/#1296" class="Bound">uv</a><a id="1298" class="Symbol">)</a> <a id="1300" href="/DenotTrans/#1300" class="Bound">vw</a> <a id="1303" class="Symbol">=</a> <a id="1305" href="/DenotTrans/#541" class="InductiveConstructor">ConjL⊑</a> <a id="1312" class="Symbol">(</a><a id="1313" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1320" href="/DenotTrans/#1293" class="Bound">tv</a> <a id="1323" href="/DenotTrans/#1300" class="Bound">vw</a><a id="1325" class="Symbol">)</a> <a id="1327" class="Symbol">(</a><a id="1328" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1335" href="/DenotTrans/#1296" class="Bound">uv</a> <a id="1338" href="/DenotTrans/#1300" class="Bound">vw</a><a id="1340" class="Symbol">)</a>
+<a id="1342" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1349" class="Symbol">(</a><a id="1350" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1358" href="/DenotTrans/#1358" class="Bound">tu</a><a id="1360" class="Symbol">)</a> <a id="1362" class="Symbol">(</a><a id="1363" href="/DenotTrans/#541" class="InductiveConstructor">ConjL⊑</a> <a id="1370" href="/DenotTrans/#1370" class="Bound">uw</a> <a id="1373" href="/DenotTrans/#1373" class="Bound">vw</a><a id="1375" class="Symbol">)</a> <a id="1377" class="Symbol">=</a> <a id="1379" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1386" href="/DenotTrans/#1358" class="Bound">tu</a> <a id="1389" href="/DenotTrans/#1370" class="Bound">uw</a>
+<a id="1392" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1399" class="Symbol">(</a><a id="1400" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1408" href="/DenotTrans/#1408" class="Bound">tu</a><a id="1410" class="Symbol">)</a> <a id="1412" class="Symbol">(</a><a id="1413" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1421" href="/DenotTrans/#1421" class="Bound">uvw</a><a id="1424" class="Symbol">)</a> <a id="1426" class="Symbol">=</a> <a id="1428" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1436" class="Symbol">(</a><a id="1437" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1444" class="Symbol">(</a><a id="1445" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1453" href="/DenotTrans/#1408" class="Bound">tu</a><a id="1455" class="Symbol">)</a> <a id="1457" href="/DenotTrans/#1421" class="Bound">uvw</a><a id="1460" class="Symbol">)</a>
+<a id="1462" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1469" class="Symbol">(</a><a id="1470" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1478" href="/DenotTrans/#1478" class="Bound">tu</a><a id="1480" class="Symbol">)</a> <a id="1482" class="Symbol">(</a><a id="1483" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1491" href="/DenotTrans/#1491" class="Bound">uvw</a><a id="1494" class="Symbol">)</a> <a id="1496" class="Symbol">=</a> <a id="1498" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1506" class="Symbol">(</a><a id="1507" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1514" class="Symbol">(</a><a id="1515" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1523" href="/DenotTrans/#1478" class="Bound">tu</a><a id="1525" class="Symbol">)</a> <a id="1527" href="/DenotTrans/#1491" class="Bound">uvw</a><a id="1530" class="Symbol">)</a>
+<a id="1532" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1539" class="Symbol">(</a><a id="1540" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1548" href="/DenotTrans/#1548" class="Bound">tv</a><a id="1550" class="Symbol">)</a> <a id="1552" class="Symbol">(</a><a id="1553" href="/DenotTrans/#541" class="InductiveConstructor">ConjL⊑</a> <a id="1560" href="/DenotTrans/#1560" class="Bound">uw</a> <a id="1563" href="/DenotTrans/#1563" class="Bound">vw</a><a id="1565" class="Symbol">)</a> <a id="1567" class="Symbol">=</a> <a id="1569" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1576" href="/DenotTrans/#1548" class="Bound">tv</a> <a id="1579" href="/DenotTrans/#1563" class="Bound">vw</a>
+<a id="1582" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1589" class="Symbol">(</a><a id="1590" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1598" href="/DenotTrans/#1598" class="Bound">tv</a><a id="1600" class="Symbol">)</a> <a id="1602" class="Symbol">(</a><a id="1603" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1611" href="/DenotTrans/#1611" class="Bound">uvw</a><a id="1614" class="Symbol">)</a> <a id="1616" class="Symbol">=</a> <a id="1618" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1626" class="Symbol">(</a><a id="1627" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1634" class="Symbol">(</a><a id="1635" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1643" href="/DenotTrans/#1598" class="Bound">tv</a><a id="1645" class="Symbol">)</a> <a id="1647" href="/DenotTrans/#1611" class="Bound">uvw</a><a id="1650" class="Symbol">)</a>
+<a id="1652" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1659" class="Symbol">(</a><a id="1660" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1668" href="/DenotTrans/#1668" class="Bound">tv</a><a id="1670" class="Symbol">)</a> <a id="1672" class="Symbol">(</a><a id="1673" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1681" href="/DenotTrans/#1681" class="Bound">uvw</a><a id="1684" class="Symbol">)</a> <a id="1686" class="Symbol">=</a> <a id="1688" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1696" class="Symbol">(</a><a id="1697" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1704" class="Symbol">(</a><a id="1705" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1713" href="/DenotTrans/#1668" class="Bound">tv</a><a id="1715" class="Symbol">)</a> <a id="1717" href="/DenotTrans/#1681" class="Bound">uvw</a><a id="1720" class="Symbol">)</a>
+<a id="1722" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1729" class="Symbol">(</a><a id="1730" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1735" href="/DenotTrans/#1735" class="Bound">u′u</a> <a id="1739" href="/DenotTrans/#1739" class="Bound">vv′</a><a id="1742" class="Symbol">)</a> <a id="1744" class="Symbol">(</a><a id="1745" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1753" href="/DenotTrans/#1753" class="Bound">u′v′w</a><a id="1758" class="Symbol">)</a> <a id="1760" class="Symbol">=</a> <a id="1762" href="/DenotTrans/#623" class="InductiveConstructor">ConjR1⊑</a> <a id="1770" class="Symbol">(</a><a id="1771" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1778" class="Symbol">(</a><a id="1779" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1784" href="/DenotTrans/#1735" class="Bound">u′u</a> <a id="1788" href="/DenotTrans/#1739" class="Bound">vv′</a><a id="1791" class="Symbol">)</a> <a id="1793" href="/DenotTrans/#1753" class="Bound">u′v′w</a><a id="1798" class="Symbol">)</a>
+<a id="1800" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1807" class="Symbol">(</a><a id="1808" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1813" href="/DenotTrans/#1813" class="Bound">u′u</a> <a id="1817" href="/DenotTrans/#1817" class="Bound">vv′</a><a id="1820" class="Symbol">)</a> <a id="1822" class="Symbol">(</a><a id="1823" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1831" href="/DenotTrans/#1831" class="Bound">u′v′w</a><a id="1836" class="Symbol">)</a> <a id="1838" class="Symbol">=</a> <a id="1840" href="/DenotTrans/#694" class="InductiveConstructor">ConjR2⊑</a> <a id="1848" class="Symbol">(</a><a id="1849" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1856" class="Symbol">(</a><a id="1857" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1862" href="/DenotTrans/#1813" class="Bound">u′u</a> <a id="1866" href="/DenotTrans/#1817" class="Bound">vv′</a><a id="1869" class="Symbol">)</a> <a id="1871" href="/DenotTrans/#1831" class="Bound">u′v′w</a><a id="1876" class="Symbol">)</a>
+<a id="1878" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1885" class="Symbol">(</a><a id="1886" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1891" href="/DenotTrans/#1891" class="Bound">u′u</a> <a id="1895" href="/DenotTrans/#1895" class="Bound">vv′</a><a id="1898" class="Symbol">)</a> <a id="1900" class="Symbol">(</a><a id="1901" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1906" href="/DenotTrans/#1906" class="Bound">u″u′</a> <a id="1911" href="/DenotTrans/#1911" class="Bound">v′v″</a><a id="1915" class="Symbol">)</a> <a id="1917" class="Symbol">=</a> <a id="1919" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1924" class="Symbol">(</a><a id="1925" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1932" href="/DenotTrans/#1906" class="Bound">u″u′</a> <a id="1937" href="/DenotTrans/#1891" class="Bound">u′u</a><a id="1940" class="Symbol">)</a> <a id="1942" class="Symbol">(</a><a id="1943" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1950" href="/DenotTrans/#1895" class="Bound">vv′</a> <a id="1954" href="/DenotTrans/#1911" class="Bound">v′v″</a><a id="1958" class="Symbol">)</a>
+<a id="1960" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="1967" class="Symbol">(</a><a id="1968" href="/DenotTrans/#765" class="InductiveConstructor">Fun⊑</a> <a id="1973" href="/DenotTrans/#1973" class="Bound">u′u</a> <a id="1977" href="/DenotTrans/#1977" class="Bound">vv′v″</a><a id="1982" class="Symbol">)</a> <a id="1984" class="Symbol">(</a><a id="1985" href="/DenotTrans/#879" class="InductiveConstructor">Dist⊑</a> <a id="1991" href="/DenotTrans/#1991" class="Bound">u′v′w</a> <a id="1997" href="/DenotTrans/#1997" class="Bound">u′v″w</a><a id="2002" class="Symbol">)</a> <a id="2004" class="Symbol">=</a> <a id="2006" class="Symbol">{!!}</a>
+<a id="2011" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="2018" class="Symbol">(</a><a id="2019" href="/DenotTrans/#879" class="InductiveConstructor">Dist⊑</a> <a id="2025" href="/DenotTrans/#2025" class="Bound">tuw</a> <a id="2029" href="/DenotTrans/#2029" class="Bound">tvw</a><a id="2032" class="Symbol">)</a> <a id="2034" href="/DenotTrans/#2034" class="Bound">wx</a> <a id="2037" class="Symbol">=</a> <a id="2039" href="/DenotTrans/#879" class="InductiveConstructor">Dist⊑</a> <a id="2045" class="Symbol">(</a><a id="2046" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="2053" href="/DenotTrans/#2025" class="Bound">tuw</a> <a id="2057" href="/DenotTrans/#2034" class="Bound">wx</a><a id="2059" class="Symbol">)</a> <a id="2061" class="Symbol">(</a><a id="2062" href="/DenotTrans/#1182" class="Function">trans⊑</a> <a id="2069" href="/DenotTrans/#2029" class="Bound">tvw</a> <a id="2073" href="/DenotTrans/#2034" class="Bound">wx</a><a id="2075" class="Symbol">)</a></pre>
+
+<p>There is one hole in the proof that I think it may be impossible to fill.
+Here is a diagram of the relevant case.</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>u′ ⊑ u                       u′ ↦ v′ ⊑ w
+v ⊑ v′ ⊔ v″                  u′ ↦ v″ ⊑ w
+---------------------Fun⊑    ----------------Dist⊑
+u ↦ v ⊑ u′ ↦ v′ ⊔ v″         u′ ↦ v′ ⊔ v″ ⊑ w
+---------------------------------------------Trans⊑
+u ↦ v ⊑ w
+</code></pre></div></div>
+
+  </div>
+
+  <p style="text-align:center;">
+    
+    
+    <a alt="Source code" href="https://github.com/plfa/plfa.github.io/blob/dev/src/plfa/DenotTrans.lagda">Source</a>
+    
+    
+</p>
+
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Programming Language Foundations in Agda
+</h2><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Philip Wadler</li>
+          <li><a class="u-email" href="mailto:wadler@inf.ed.ac.uk">wadler@inf.ed.ac.uk</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wadler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wadler</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Wen Kokke</li>
+          <li><a class="u-email" href="mailto:wen.kokke@ed.ac.uk">wen.kokke@ed.ac.uk</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wenkokke</span></a></li><li><a href="https://www.twitter.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">wenkokke</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div>This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+  </div>
+</footer>
+<!-- Import jQuery -->
+<script type="text/javascript" src="/assets/jquery.js"></script>
+
+<!-- Script which allows for foldable code blocks -->
+<script type="text/javascript">
+ $('div.foldable pre').each(function(){
+     var autoHeight = $(this).height();
+     var lineHeight = parseFloat($(this).css('line-height'));
+
+     var plus    = $("<div></div>");
+     var horLine = $("<div></div>");
+     var verLine = $("<div></div>");
+     $(this).prepend(plus);
+     plus.css({
+         'position'         : 'relative',
+         'float'            : 'right',
+         'right'            : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'width'            : lineHeight,
+         'height'           : lineHeight});
+     verLine.css({
+         'position'         : 'relative',
+         'height'           : lineHeight,
+         'width'            : '3px',
+         'background-color' : '#C1E0FF'});
+     horLine.css({
+         'position'         : 'relative',
+         'top'              : '-' + (0.5 * lineHeight + 1.5) + 'px',
+         'left'             : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'height'           : '3px',
+         'width'            : lineHeight,
+         'background-color' : '#C1E0FF'});
+     plus.append(verLine);
+     plus.append(horLine);
+
+     $(this).height(2.0 * lineHeight);
+     $(this).css('overflow','hidden');
+
+     $(this).click(function(){
+         if ($(this).height() == autoHeight) {
+             $(this).height(2.0 * lineHeight);
+             plus.show();
+         }
+         else {
+             $(this).height('auto');
+             plus.hide();
+         }
+     });
+ });
+</script>
+
+<!-- Import KaTeX -->
+<script type="text/javascript" src="/assets/katex.js"></script>
+
+<!-- Script which renders TeX using KaTeX -->
+<script type="text/javascript">
+ $("script[type='math/tex']").replaceWith(
+     function(){
+         var tex = $(this).text();
+         return "<span class=\"inline-equation\">" +
+                katex.renderToString(tex) +
+                "</span>";
+     });
+ $("script[type='math/tex; mode=display']").replaceWith(
+     function(){
+         var tex = $(this).text().replace(/%.*?(\n|$)/g,"");
+         return "<div class=\"equation\">" +
+                katex.renderToString("\\displaystyle "+tex) +
+                "</div>";
+     });
+</script>
+</body>
+
+</html>

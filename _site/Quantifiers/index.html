@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quantifiers: Universals and existentials | Programming Language Foundations in Agda
+</title><!-- Begin Jekyll SEO tag v2.5.0 -->
+<meta name="generator" content="Jekyll v3.8.5" />
+<meta property="og:title" content="Quantifiers: Universals and existentials" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Programming Language Foundations in Agda" />
+<meta property="og:description" content="Programming Language Foundations in Agda" />
+<link rel="canonical" href="https://plfa.github.io/Quantifiers/" />
+<meta property="og:url" content="https://plfa.github.io/Quantifiers/" />
+<meta property="og:site_name" content="Programming Language Foundations in Agda" />
+<script type="application/ld+json">
+{"description":"Programming Language Foundations in Agda","@type":"WebPage","url":"https://plfa.github.io/Quantifiers/","headline":"Quantifiers: Universals and existentials","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/assets/main.css"></head>
+<body><header class="site-header" role="banner">
+
+    <div class="wrapper">
+
+        <a class="site-title" href="/">Programming Language Foundations in Agda
+</a>
+
+        <nav class="site-nav">
+            <span class="menu-icon">
+                <svg viewBox="0 0 18 15" width="18px" height="15px">
+                    <path fill="#424242" d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.031C17.335,0,18,0.665,18,1.484L18,1.484z"/>
+                    <path fill="#424242" d="M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0c0-0.82,0.665-1.484,1.484-1.484 h15.031C17.335,6.031,18,6.696,18,7.516L18,7.516z"/>
+                    <path fill="#424242" d="M18,13.516C18,14.335,17.335,15,16.516,15H1.484C0.665,15,0,14.335,0,13.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.031C17.335,12.031,18,12.696,18,13.516L18,13.516z"/>
+                </svg>
+            </span>
+
+            <div class="trigger">
+                <a class="page-link" href="/">Table of Contents</a>
+                <a class="page-link" href="/GettingStarted/">Getting Started</a>
+            </div>
+        </nav>
+
+    </div>
+
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post">
+
+  <header class="post-header">
+      <h1 class="post-title">Quantifiers: Universals and existentials</h1>
+  </header>
+
+  <p style="text-align:center;">
+    
+    <a alt="Previous chapter" href="/Negation/">Prev</a>
+    &bullet;
+    
+    
+    <a alt="Source code" href="https://github.com/plfa/plfa.github.io/blob/dev/src/plfa/Quantifiers.lagda">Source</a>
+    
+    
+    &bullet;
+    <a alt="Next chapter" href="/Decidable/">Next</a>
+    
+</p>
+
+
+  <div class="post-content">
+    <pre class="Agda"><a id="168" class="Keyword">module</a> <a id="175" href="/Quantifiers/" class="Module">plfa.Quantifiers</a> <a id="192" class="Keyword">where</a></pre>
+
+<p>This chapter introduces universal and existential quantification.</p>
+
+<h2 id="imports">Imports</h2>
+
+<pre class="Agda"><a id="302" class="Keyword">import</a> <a id="309" href="https://agda.github.io/agda-stdlib/Relation.Binary.PropositionalEquality.html" class="Module">Relation.Binary.PropositionalEquality</a> <a id="347" class="Symbol">as</a> <a id="350" class="Module">Eq</a>
+<a id="353" class="Keyword">open</a> <a id="358" href="https://agda.github.io/agda-stdlib/Relation.Binary.PropositionalEquality.html" class="Module">Eq</a> <a id="361" class="Keyword">using</a> <a id="367" class="Symbol">(</a><a id="368" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#83" class="Datatype Operator">_≡_</a><a id="371" class="Symbol">;</a> <a id="373" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a><a id="377" class="Symbol">)</a>
+<a id="379" class="Keyword">open</a> <a id="384" class="Keyword">import</a> <a id="391" href="https://agda.github.io/agda-stdlib/Data.Nat.html" class="Module">Data.Nat</a> <a id="400" class="Keyword">using</a> <a id="406" class="Symbol">(</a><a id="407" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="408" class="Symbol">;</a> <a id="410" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#115" class="InductiveConstructor">zero</a><a id="414" class="Symbol">;</a> <a id="416" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#128" class="InductiveConstructor">suc</a><a id="419" class="Symbol">;</a> <a id="421" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#230" class="Primitive Operator">_+_</a><a id="424" class="Symbol">;</a> <a id="426" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#433" class="Primitive Operator">_*_</a><a id="429" class="Symbol">)</a>
+<a id="431" class="Keyword">open</a> <a id="436" class="Keyword">import</a> <a id="443" href="https://agda.github.io/agda-stdlib/Relation.Nullary.html" class="Module">Relation.Nullary</a> <a id="460" class="Keyword">using</a> <a id="466" class="Symbol">(</a><a id="467" href="https://agda.github.io/agda-stdlib/Relation.Nullary.html#464" class="Function Operator">¬_</a><a id="469" class="Symbol">)</a>
+<a id="471" class="Keyword">open</a> <a id="476" class="Keyword">import</a> <a id="483" href="https://agda.github.io/agda-stdlib/Data.Product.html" class="Module">Data.Product</a> <a id="496" class="Keyword">using</a> <a id="502" class="Symbol">(</a><a id="503" href="https://agda.github.io/agda-stdlib/Data.Product.html#1353" class="Function Operator">_×_</a><a id="506" class="Symbol">;</a> <a id="508" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Sigma.html#155" class="Field">proj₁</a><a id="513" class="Symbol">)</a> <a id="515" class="Keyword">renaming</a> <a id="524" class="Symbol">(</a><a id="525" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Sigma.html#139" class="InductiveConstructor Operator">_,_</a> <a id="529" class="Symbol">to</a> <a id="532" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Sigma.html#139" class="InductiveConstructor Operator">⟨_,_⟩</a><a id="537" class="Symbol">)</a>
+<a id="539" class="Keyword">open</a> <a id="544" class="Keyword">import</a> <a id="551" href="https://agda.github.io/agda-stdlib/Data.Sum.html" class="Module">Data.Sum</a> <a id="560" class="Keyword">using</a> <a id="566" class="Symbol">(</a><a id="567" href="https://agda.github.io/agda-stdlib/Data.Sum.Base.html#419" class="Datatype Operator">_⊎_</a><a id="570" class="Symbol">)</a>
+<a id="572" class="Keyword">open</a> <a id="577" class="Keyword">import</a> <a id="584" href="/Isomorphism/" class="Module">plfa.Isomorphism</a> <a id="601" class="Keyword">using</a> <a id="607" class="Symbol">(</a><a id="608" href="/Isomorphism/#4092" class="Record Operator">_≃_</a><a id="611" class="Symbol">;</a> <a id="613" href="/Isomorphism/#2736" class="Postulate">extensionality</a><a id="627" class="Symbol">)</a></pre>
+
+<h2 id="universals">Universals</h2>
+
+<p>We formalise universal quantification using the
+dependent function type, which has appeared throughout this book.</p>
+
+<p>Given a variable <code class="highlighter-rouge">x</code> of type <code class="highlighter-rouge">A</code> and a proposition <code class="highlighter-rouge">B x</code> which
+contains <code class="highlighter-rouge">x</code> as a free variable, the universally quantified
+proposition <code class="highlighter-rouge">∀ (x : A) → B x</code> holds if for every term <code class="highlighter-rouge">M</code> of type
+<code class="highlighter-rouge">A</code> the proposition <code class="highlighter-rouge">B M</code> holds.  Here <code class="highlighter-rouge">B M</code> stands for
+the proposition <code class="highlighter-rouge">B x</code> with each free occurrence of <code class="highlighter-rouge">x</code> replaced by
+<code class="highlighter-rouge">M</code>.  Variable <code class="highlighter-rouge">x</code> appears free in <code class="highlighter-rouge">B x</code> but bound in
+<code class="highlighter-rouge">∀ (x : A) → B x</code>.</p>
+
+<p>Evidence that <code class="highlighter-rouge">∀ (x : A) → B x</code> holds is of the form</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>λ (x : A) → N x
+</code></pre></div></div>
+
+<p>where <code class="highlighter-rouge">N x</code> is a term of type <code class="highlighter-rouge">B x</code>, and <code class="highlighter-rouge">N x</code> and <code class="highlighter-rouge">B x</code> both contain
+a free variable <code class="highlighter-rouge">x</code> of type <code class="highlighter-rouge">A</code>.  Given a term <code class="highlighter-rouge">L</code> providing evidence
+that <code class="highlighter-rouge">∀ (x : A) → B x</code> holds, and a term <code class="highlighter-rouge">M</code> of type <code class="highlighter-rouge">A</code>, the term <code class="highlighter-rouge">L
+M</code> provides evidence that <code class="highlighter-rouge">B M</code> holds.  In other words, evidence that
+<code class="highlighter-rouge">∀ (x : A) → B x</code> holds is a function that converts a term <code class="highlighter-rouge">M</code> of type
+<code class="highlighter-rouge">A</code> into evidence that <code class="highlighter-rouge">B M</code> holds.</p>
+
+<p>Put another way, if we know that <code class="highlighter-rouge">∀ (x : A) → B x</code> holds and that <code class="highlighter-rouge">M</code>
+is a term of type <code class="highlighter-rouge">A</code> then we may conclude that <code class="highlighter-rouge">B M</code> holds:</p>
+<pre class="Agda"><a id="∀-elim"></a><a id="1767" href="/Quantifiers/#1767" class="Function">∀-elim</a> <a id="1774" class="Symbol">:</a> <a id="1776" class="Symbol">∀</a> <a id="1778" class="Symbol">{</a><a id="1779" href="/Quantifiers/#1779" class="Bound">A</a> <a id="1781" class="Symbol">:</a> <a id="1783" class="PrimitiveType">Set</a><a id="1786" class="Symbol">}</a> <a id="1788" class="Symbol">{</a><a id="1789" href="/Quantifiers/#1789" class="Bound">B</a> <a id="1791" class="Symbol">:</a> <a id="1793" href="/Quantifiers/#1779" class="Bound">A</a> <a id="1795" class="Symbol">→</a> <a id="1797" class="PrimitiveType">Set</a><a id="1800" class="Symbol">}</a>
+  <a id="1804" class="Symbol">→</a> <a id="1806" class="Symbol">(</a><a id="1807" href="/Quantifiers/#1807" class="Bound">L</a> <a id="1809" class="Symbol">:</a> <a id="1811" class="Symbol">∀</a> <a id="1813" class="Symbol">(</a><a id="1814" href="/Quantifiers/#1814" class="Bound">x</a> <a id="1816" class="Symbol">:</a> <a id="1818" href="/Quantifiers/#1779" class="Bound">A</a><a id="1819" class="Symbol">)</a> <a id="1821" class="Symbol">→</a> <a id="1823" href="/Quantifiers/#1789" class="Bound">B</a> <a id="1825" href="/Quantifiers/#1814" class="Bound">x</a><a id="1826" class="Symbol">)</a>
+  <a id="1830" class="Symbol">→</a> <a id="1832" class="Symbol">(</a><a id="1833" href="/Quantifiers/#1833" class="Bound">M</a> <a id="1835" class="Symbol">:</a> <a id="1837" href="/Quantifiers/#1779" class="Bound">A</a><a id="1838" class="Symbol">)</a>
+    <a id="1844" class="Comment">-----------------</a>
+  <a id="1864" class="Symbol">→</a> <a id="1866" href="/Quantifiers/#1789" class="Bound">B</a> <a id="1868" href="/Quantifiers/#1833" class="Bound">M</a>
+<a id="1870" href="/Quantifiers/#1767" class="Function">∀-elim</a> <a id="1877" href="/Quantifiers/#1877" class="Bound">L</a> <a id="1879" href="/Quantifiers/#1879" class="Bound">M</a> <a id="1881" class="Symbol">=</a> <a id="1883" href="/Quantifiers/#1877" class="Bound">L</a> <a id="1885" href="/Quantifiers/#1879" class="Bound">M</a></pre>
+<p>As with <code class="highlighter-rouge">→-elim</code>, the rule corresponds to function application.</p>
+
+<p>Functions arise as a special case of dependent functions,
+where the range does not depend on a variable drawn from the domain.
+When a function is viewed as evidence of implication, both its
+argument and result are viewed as evidence, whereas when a dependent
+function is viewed as evidence of a universal, its argument is viewed
+as an element of a data type and its result is viewed as evidence of
+a proposition that depends on the argument. This difference is largely
+a matter of interpretation, since in Agda a value of a type and
+evidence of a proposition are indistinguishable.</p>
+
+<p>Dependent function types are sometimes referred to as dependent
+products, because if <code class="highlighter-rouge">A</code> is a finite type with values <code class="highlighter-rouge">x₁ , ⋯ , xₙ</code>,
+and if each of the types <code class="highlighter-rouge">B x₁ , ⋯ , B xₙ</code> has <code class="highlighter-rouge">m₁ , ⋯ , mₙ</code> distinct
+members, then <code class="highlighter-rouge">∀ (x : A) → B x</code> has <code class="highlighter-rouge">m₁ * ⋯ * mₙ</code> members.  Indeed,
+sometimes the notation <code class="highlighter-rouge">∀ (x : A) → B x</code> is replaced by a notation
+such as <code class="highlighter-rouge">Π[ x ∈ A ] (B x)</code>, where <code class="highlighter-rouge">Π</code> stands for product.  However, we
+will stick with the name dependent function, because (as we will see)
+dependent product is ambiguous.</p>
+
+<h4 id="exercise--distrib--recommended">Exercise <code class="highlighter-rouge">∀-distrib-×</code> (recommended)</h4>
+
+<p>Show that universals distribute over conjunction:</p>
+<pre class="Agda"><a id="3165" class="Keyword">postulate</a>
+  <a id="∀-distrib-×"></a><a id="3177" href="/Quantifiers/#3177" class="Postulate">∀-distrib-×</a> <a id="3189" class="Symbol">:</a> <a id="3191" class="Symbol">∀</a> <a id="3193" class="Symbol">{</a><a id="3194" href="/Quantifiers/#3194" class="Bound">A</a> <a id="3196" class="Symbol">:</a> <a id="3198" class="PrimitiveType">Set</a><a id="3201" class="Symbol">}</a> <a id="3203" class="Symbol">{</a><a id="3204" href="/Quantifiers/#3204" class="Bound">B</a> <a id="3206" href="/Quantifiers/#3206" class="Bound">C</a> <a id="3208" class="Symbol">:</a> <a id="3210" href="/Quantifiers/#3194" class="Bound">A</a> <a id="3212" class="Symbol">→</a> <a id="3214" class="PrimitiveType">Set</a><a id="3217" class="Symbol">}</a> <a id="3219" class="Symbol">→</a>
+    <a id="3225" class="Symbol">(∀</a> <a id="3228" class="Symbol">(</a><a id="3229" href="/Quantifiers/#3229" class="Bound">x</a> <a id="3231" class="Symbol">:</a> <a id="3233" href="/Quantifiers/#3194" class="Bound">A</a><a id="3234" class="Symbol">)</a> <a id="3236" class="Symbol">→</a> <a id="3238" href="/Quantifiers/#3204" class="Bound">B</a> <a id="3240" href="/Quantifiers/#3229" class="Bound">x</a> <a id="3242" href="https://agda.github.io/agda-stdlib/Data.Product.html#1353" class="Function Operator">×</a> <a id="3244" href="/Quantifiers/#3206" class="Bound">C</a> <a id="3246" href="/Quantifiers/#3229" class="Bound">x</a><a id="3247" class="Symbol">)</a> <a id="3249" href="/Isomorphism/#4092" class="Record Operator">≃</a> <a id="3251" class="Symbol">(∀</a> <a id="3254" class="Symbol">(</a><a id="3255" href="/Quantifiers/#3255" class="Bound">x</a> <a id="3257" class="Symbol">:</a> <a id="3259" href="/Quantifiers/#3194" class="Bound">A</a><a id="3260" class="Symbol">)</a> <a id="3262" class="Symbol">→</a> <a id="3264" href="/Quantifiers/#3204" class="Bound">B</a> <a id="3266" href="/Quantifiers/#3255" class="Bound">x</a><a id="3267" class="Symbol">)</a> <a id="3269" href="https://agda.github.io/agda-stdlib/Data.Product.html#1353" class="Function Operator">×</a> <a id="3271" class="Symbol">(∀</a> <a id="3274" class="Symbol">(</a><a id="3275" href="/Quantifiers/#3275" class="Bound">x</a> <a id="3277" class="Symbol">:</a> <a id="3279" href="/Quantifiers/#3194" class="Bound">A</a><a id="3280" class="Symbol">)</a> <a id="3282" class="Symbol">→</a> <a id="3284" href="/Quantifiers/#3206" class="Bound">C</a> <a id="3286" href="/Quantifiers/#3275" class="Bound">x</a><a id="3287" class="Symbol">)</a></pre>
+<p>Compare this with the result (<code class="highlighter-rouge">→-distrib-×</code>) in
+Chapter <a href="/Connectives/">Connectives</a>.</p>
+
+<h4 id="exercise--implies-">Exercise <code class="highlighter-rouge">⊎∀-implies-∀⊎</code></h4>
+
+<p>Show that a disjunction of universals implies a universal of disjunctions:</p>
+<pre class="Agda"><a id="3509" class="Keyword">postulate</a>
+  <a id="⊎∀-implies-∀⊎"></a><a id="3521" href="/Quantifiers/#3521" class="Postulate">⊎∀-implies-∀⊎</a> <a id="3535" class="Symbol">:</a> <a id="3537" class="Symbol">∀</a> <a id="3539" class="Symbol">{</a><a id="3540" href="/Quantifiers/#3540" class="Bound">A</a> <a id="3542" class="Symbol">:</a> <a id="3544" class="PrimitiveType">Set</a><a id="3547" class="Symbol">}</a> <a id="3549" class="Symbol">{</a><a id="3550" href="/Quantifiers/#3550" class="Bound">B</a> <a id="3552" href="/Quantifiers/#3552" class="Bound">C</a> <a id="3554" class="Symbol">:</a> <a id="3556" href="/Quantifiers/#3540" class="Bound">A</a> <a id="3558" class="Symbol">→</a> <a id="3560" class="PrimitiveType">Set</a><a id="3563" class="Symbol">}</a> <a id="3565" class="Symbol">→</a>
+    <a id="3571" class="Symbol">(∀</a> <a id="3574" class="Symbol">(</a><a id="3575" href="/Quantifiers/#3575" class="Bound">x</a> <a id="3577" class="Symbol">:</a> <a id="3579" href="/Quantifiers/#3540" class="Bound">A</a><a id="3580" class="Symbol">)</a> <a id="3582" class="Symbol">→</a> <a id="3584" href="/Quantifiers/#3550" class="Bound">B</a> <a id="3586" href="/Quantifiers/#3575" class="Bound">x</a><a id="3587" class="Symbol">)</a> <a id="3589" href="https://agda.github.io/agda-stdlib/Data.Sum.Base.html#419" class="Datatype Operator">⊎</a> <a id="3591" class="Symbol">(∀</a> <a id="3594" class="Symbol">(</a><a id="3595" href="/Quantifiers/#3595" class="Bound">x</a> <a id="3597" class="Symbol">:</a> <a id="3599" href="/Quantifiers/#3540" class="Bound">A</a><a id="3600" class="Symbol">)</a> <a id="3602" class="Symbol">→</a> <a id="3604" href="/Quantifiers/#3552" class="Bound">C</a> <a id="3606" href="/Quantifiers/#3595" class="Bound">x</a><a id="3607" class="Symbol">)</a>  <a id="3610" class="Symbol">→</a>  <a id="3613" class="Symbol">∀</a> <a id="3615" class="Symbol">(</a><a id="3616" href="/Quantifiers/#3616" class="Bound">x</a> <a id="3618" class="Symbol">:</a> <a id="3620" href="/Quantifiers/#3540" class="Bound">A</a><a id="3621" class="Symbol">)</a> <a id="3623" class="Symbol">→</a> <a id="3625" href="/Quantifiers/#3550" class="Bound">B</a> <a id="3627" href="/Quantifiers/#3616" class="Bound">x</a> <a id="3629" href="https://agda.github.io/agda-stdlib/Data.Sum.Base.html#419" class="Datatype Operator">⊎</a> <a id="3631" href="/Quantifiers/#3552" class="Bound">C</a> <a id="3633" href="/Quantifiers/#3616" class="Bound">x</a></pre>
+<p>Does the converse hold? If so, prove; if not, explain why.</p>
+
+<h4 id="exercise--">Exercise <code class="highlighter-rouge">∀-×</code></h4>
+
+<p>Consider the following type.</p>
+<pre class="Agda"><a id="3770" class="Keyword">data</a> <a id="Tri"></a><a id="3775" href="/Quantifiers/#3775" class="Datatype">Tri</a> <a id="3779" class="Symbol">:</a> <a id="3781" class="PrimitiveType">Set</a> <a id="3785" class="Keyword">where</a>
+  <a id="Tri.aa"></a><a id="3793" href="/Quantifiers/#3793" class="InductiveConstructor">aa</a> <a id="3796" class="Symbol">:</a> <a id="3798" href="/Quantifiers/#3775" class="Datatype">Tri</a>
+  <a id="Tri.bb"></a><a id="3804" href="/Quantifiers/#3804" class="InductiveConstructor">bb</a> <a id="3807" class="Symbol">:</a> <a id="3809" href="/Quantifiers/#3775" class="Datatype">Tri</a>
+  <a id="Tri.cc"></a><a id="3815" href="/Quantifiers/#3815" class="InductiveConstructor">cc</a> <a id="3818" class="Symbol">:</a> <a id="3820" href="/Quantifiers/#3775" class="Datatype">Tri</a></pre>
+<p>Let <code class="highlighter-rouge">B</code> be a type indexed by <code class="highlighter-rouge">Tri</code>, that is <code class="highlighter-rouge">B : Tri → Set</code>.
+Show that <code class="highlighter-rouge">∀ (x : Tri) → B x</code> is isomorphic to <code class="highlighter-rouge">B aa × B bb × B cc</code>.</p>
+
+<h2 id="existentials">Existentials</h2>
+
+<p>Given a variable <code class="highlighter-rouge">x</code> of type <code class="highlighter-rouge">A</code> and a proposition <code class="highlighter-rouge">B x</code> which
+contains <code class="highlighter-rouge">x</code> as a free variable, the existentially quantified
+proposition <code class="highlighter-rouge">Σ[ x ∈ A ] B x</code> holds if for some term <code class="highlighter-rouge">M</code> of type
+<code class="highlighter-rouge">A</code> the proposition <code class="highlighter-rouge">B M</code> holds.  Here <code class="highlighter-rouge">B M</code> stands for
+the proposition <code class="highlighter-rouge">B x</code> with each free occurrence of <code class="highlighter-rouge">x</code> replaced by
+<code class="highlighter-rouge">M</code>.  Variable <code class="highlighter-rouge">x</code> appears free in <code class="highlighter-rouge">B x</code> but bound in
+<code class="highlighter-rouge">Σ[ x ∈ A ] B x</code>.</p>
+
+<p>We formalise existential quantification by declaring a suitable
+inductive type:</p>
+<pre class="Agda"><a id="4462" class="Keyword">data</a> <a id="Σ"></a><a id="4467" href="/Quantifiers/#4467" class="Datatype">Σ</a> <a id="4469" class="Symbol">(</a><a id="4470" href="/Quantifiers/#4470" class="Bound">A</a> <a id="4472" class="Symbol">:</a> <a id="4474" class="PrimitiveType">Set</a><a id="4477" class="Symbol">)</a> <a id="4479" class="Symbol">(</a><a id="4480" href="/Quantifiers/#4480" class="Bound">B</a> <a id="4482" class="Symbol">:</a> <a id="4484" href="/Quantifiers/#4470" class="Bound">A</a> <a id="4486" class="Symbol">→</a> <a id="4488" class="PrimitiveType">Set</a><a id="4491" class="Symbol">)</a> <a id="4493" class="Symbol">:</a> <a id="4495" class="PrimitiveType">Set</a> <a id="4499" class="Keyword">where</a>
+  <a id="Σ.⟨_,_⟩"></a><a id="4507" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨_,_⟩</a> <a id="4513" class="Symbol">:</a> <a id="4515" class="Symbol">(</a><a id="4516" href="/Quantifiers/#4516" class="Bound">x</a> <a id="4518" class="Symbol">:</a> <a id="4520" href="/Quantifiers/#4470" class="Bound">A</a><a id="4521" class="Symbol">)</a> <a id="4523" class="Symbol">→</a> <a id="4525" href="/Quantifiers/#4480" class="Bound">B</a> <a id="4527" href="/Quantifiers/#4516" class="Bound">x</a> <a id="4529" class="Symbol">→</a> <a id="4531" href="/Quantifiers/#4467" class="Datatype">Σ</a> <a id="4533" href="/Quantifiers/#4470" class="Bound">A</a> <a id="4535" href="/Quantifiers/#4480" class="Bound">B</a></pre>
+<p>We define a convenient syntax for existentials as follows:</p>
+<pre class="Agda"><a id="Σ-syntax"></a><a id="4620" href="/Quantifiers/#4620" class="Function">Σ-syntax</a> <a id="4629" class="Symbol">=</a> <a id="4631" href="/Quantifiers/#4467" class="Datatype">Σ</a>
+<a id="4633" class="Keyword">infix</a> <a id="4639" class="Number">2</a> <a id="4641" href="/Quantifiers/#4620" class="Function">Σ-syntax</a>
+<a id="4650" class="Keyword">syntax</a> <a id="4657" href="/Quantifiers/#4620" class="Function">Σ-syntax</a> A <a id="4668" class="Symbol">(λ</a> x <a id="4673" class="Symbol">→</a> B<a id="4676" class="Symbol">)</a> <a id="4678" class="Symbol">=</a> Σ[ x ∈ A ] B</pre>
+<p>This is our first use of a syntax declaration, which specifies that
+the term on the left may be written with the syntax on the right.
+The special syntax is available only when the identifier
+<code class="highlighter-rouge">Σ-syntax</code> is imported.</p>
+
+<p>Evidence that <code class="highlighter-rouge">Σ[ x ∈ A ] B x</code> holds is of the form
+<code class="highlighter-rouge">⟨ M , N ⟩</code> where <code class="highlighter-rouge">M</code> is a term of type <code class="highlighter-rouge">A</code>, and <code class="highlighter-rouge">N</code> is evidence
+that <code class="highlighter-rouge">B M</code> holds.</p>
+
+<p>Equivalently, we could also declare existentials as a record type:</p>
+<pre class="Agda"><a id="5136" class="Keyword">record</a> <a id="Σ′"></a><a id="5143" href="/Quantifiers/#5143" class="Record">Σ′</a> <a id="5146" class="Symbol">(</a><a id="5147" href="/Quantifiers/#5147" class="Bound">A</a> <a id="5149" class="Symbol">:</a> <a id="5151" class="PrimitiveType">Set</a><a id="5154" class="Symbol">)</a> <a id="5156" class="Symbol">(</a><a id="5157" href="/Quantifiers/#5157" class="Bound">B</a> <a id="5159" class="Symbol">:</a> <a id="5161" href="/Quantifiers/#5147" class="Bound">A</a> <a id="5163" class="Symbol">→</a> <a id="5165" class="PrimitiveType">Set</a><a id="5168" class="Symbol">)</a> <a id="5170" class="Symbol">:</a> <a id="5172" class="PrimitiveType">Set</a> <a id="5176" class="Keyword">where</a>
+  <a id="5184" class="Keyword">field</a>
+    <a id="Σ′.proj₁′"></a><a id="5194" href="/Quantifiers/#5194" class="Field">proj₁′</a> <a id="5201" class="Symbol">:</a> <a id="5203" href="/Quantifiers/#5147" class="Bound">A</a>
+    <a id="Σ′.proj₂′"></a><a id="5209" href="/Quantifiers/#5209" class="Field">proj₂′</a> <a id="5216" class="Symbol">:</a> <a id="5218" href="/Quantifiers/#5157" class="Bound">B</a> <a id="5220" href="/Quantifiers/#5194" class="Field">proj₁′</a></pre>
+<p>Here record construction</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>record
+  { proj₁′ = M
+  ; proj₂′ = N
+  }
+</code></pre></div></div>
+
+<p>corresponds to the term</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>⟨ M , N ⟩
+</code></pre></div></div>
+
+<p>where <code class="highlighter-rouge">M</code> is a term of type <code class="highlighter-rouge">A</code> and <code class="highlighter-rouge">N</code> is a term of type <code class="highlighter-rouge">B M</code>.</p>
+
+<p>Products arise as a special case of existentials, where the second
+component does not depend on a variable drawn from the first
+component.  When a product is viewed as evidence of a conjunction,
+both of its components are viewed as evidence, whereas when it is
+viewed as evidence of an existential, the first component is viewed as
+an element of a datatype and the second component is viewed as
+evidence of a proposition that depends on the first component.  This
+difference is largely a matter of interpretation, since in Agda a value
+of a type and evidence of a proposition are indistinguishable.</p>
+
+<p>Existentials are sometimes referred to as dependent sums,
+because if <code class="highlighter-rouge">A</code> is a finite type with values <code class="highlighter-rouge">x₁ , ⋯ , xₙ</code>, and if
+each of the types <code class="highlighter-rouge">B x₁ , ⋯ B xₙ</code> has <code class="highlighter-rouge">m₁ , ⋯ , mₙ</code> distinct members,
+then <code class="highlighter-rouge">Σ[ x ∈ A ] B x</code> has <code class="highlighter-rouge">m₁ + ⋯ + mₙ</code> members, which explains the
+choice of notation for existentials, since <code class="highlighter-rouge">Σ</code> stands for sum.</p>
+
+<p>Existentials are sometimes referred to as dependent products, since
+products arise as a special case.  However, that choice of names is
+doubly confusing, since universals also have a claim to the name dependent
+product and since existentials also have a claim to the name dependent sum.</p>
+
+<p>A common notation for existentials is <code class="highlighter-rouge">∃</code> (analogous to <code class="highlighter-rouge">∀</code> for universals).
+We follow the convention of the Agda standard library, and reserve this
+notation for the case where the domain of the bound variable is left implicit:</p>
+<pre class="Agda"><a id="∃"></a><a id="6883" href="/Quantifiers/#6883" class="Function">∃</a> <a id="6885" class="Symbol">:</a> <a id="6887" class="Symbol">∀</a> <a id="6889" class="Symbol">{</a><a id="6890" href="/Quantifiers/#6890" class="Bound">A</a> <a id="6892" class="Symbol">:</a> <a id="6894" class="PrimitiveType">Set</a><a id="6897" class="Symbol">}</a> <a id="6899" class="Symbol">(</a><a id="6900" href="/Quantifiers/#6900" class="Bound">B</a> <a id="6902" class="Symbol">:</a> <a id="6904" href="/Quantifiers/#6890" class="Bound">A</a> <a id="6906" class="Symbol">→</a> <a id="6908" class="PrimitiveType">Set</a><a id="6911" class="Symbol">)</a> <a id="6913" class="Symbol">→</a> <a id="6915" class="PrimitiveType">Set</a>
+<a id="6919" href="/Quantifiers/#6883" class="Function">∃</a> <a id="6921" class="Symbol">{</a><a id="6922" href="/Quantifiers/#6922" class="Bound">A</a><a id="6923" class="Symbol">}</a> <a id="6925" href="/Quantifiers/#6925" class="Bound">B</a> <a id="6927" class="Symbol">=</a> <a id="6929" href="/Quantifiers/#4467" class="Datatype">Σ</a> <a id="6931" href="/Quantifiers/#6922" class="Bound">A</a> <a id="6933" href="/Quantifiers/#6925" class="Bound">B</a>
+
+<a id="∃-syntax"></a><a id="6936" href="/Quantifiers/#6936" class="Function">∃-syntax</a> <a id="6945" class="Symbol">=</a> <a id="6947" href="/Quantifiers/#6883" class="Function">∃</a>
+<a id="6949" class="Keyword">syntax</a> <a id="6956" href="/Quantifiers/#6936" class="Function">∃-syntax</a> <a id="6965" class="Symbol">(λ</a> x <a id="6970" class="Symbol">→</a> B<a id="6973" class="Symbol">)</a> <a id="6975" class="Symbol">=</a> ∃[ x ] B</pre>
+<p>The special syntax is available only when the identifier <code class="highlighter-rouge">∃-syntax</code> is imported.
+We will tend to use this syntax, since it is shorter and more familiar.</p>
+
+<p>Given evidence that <code class="highlighter-rouge">∀ x → B x → C</code> holds, where <code class="highlighter-rouge">C</code> does not contain
+<code class="highlighter-rouge">x</code> as a free variable, and given evidence that <code class="highlighter-rouge">∃[ x ] B x</code> holds, we
+may conclude that <code class="highlighter-rouge">C</code> holds:</p>
+<pre class="Agda"><a id="∃-elim"></a><a id="7334" href="/Quantifiers/#7334" class="Function">∃-elim</a> <a id="7341" class="Symbol">:</a> <a id="7343" class="Symbol">∀</a> <a id="7345" class="Symbol">{</a><a id="7346" href="/Quantifiers/#7346" class="Bound">A</a> <a id="7348" class="Symbol">:</a> <a id="7350" class="PrimitiveType">Set</a><a id="7353" class="Symbol">}</a> <a id="7355" class="Symbol">{</a><a id="7356" href="/Quantifiers/#7356" class="Bound">B</a> <a id="7358" class="Symbol">:</a> <a id="7360" href="/Quantifiers/#7346" class="Bound">A</a> <a id="7362" class="Symbol">→</a> <a id="7364" class="PrimitiveType">Set</a><a id="7367" class="Symbol">}</a> <a id="7369" class="Symbol">{</a><a id="7370" href="/Quantifiers/#7370" class="Bound">C</a> <a id="7372" class="Symbol">:</a> <a id="7374" class="PrimitiveType">Set</a><a id="7377" class="Symbol">}</a>
+  <a id="7381" class="Symbol">→</a> <a id="7383" class="Symbol">(∀</a> <a id="7386" href="/Quantifiers/#7386" class="Bound">x</a> <a id="7388" class="Symbol">→</a> <a id="7390" href="/Quantifiers/#7356" class="Bound">B</a> <a id="7392" href="/Quantifiers/#7386" class="Bound">x</a> <a id="7394" class="Symbol">→</a> <a id="7396" href="/Quantifiers/#7370" class="Bound">C</a><a id="7397" class="Symbol">)</a>
+  <a id="7401" class="Symbol">→</a> <a id="7403" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="7406" href="/Quantifiers/#7406" class="Bound">x</a> <a id="7408" href="/Quantifiers/#6936" class="Function">]</a> <a id="7410" href="/Quantifiers/#7356" class="Bound">B</a> <a id="7412" href="/Quantifiers/#7406" class="Bound">x</a>
+    <a id="7418" class="Comment">---------------</a>
+  <a id="7436" class="Symbol">→</a> <a id="7438" href="/Quantifiers/#7370" class="Bound">C</a>
+<a id="7440" href="/Quantifiers/#7334" class="Function">∃-elim</a> <a id="7447" href="/Quantifiers/#7447" class="Bound">f</a> <a id="7449" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="7451" href="/Quantifiers/#7451" class="Bound">x</a> <a id="7453" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="7455" href="/Quantifiers/#7455" class="Bound">y</a> <a id="7457" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="7459" class="Symbol">=</a> <a id="7461" href="/Quantifiers/#7447" class="Bound">f</a> <a id="7463" href="/Quantifiers/#7451" class="Bound">x</a> <a id="7465" href="/Quantifiers/#7455" class="Bound">y</a></pre>
+<p>In other words, if we know for every <code class="highlighter-rouge">x</code> of type <code class="highlighter-rouge">A</code> that <code class="highlighter-rouge">B x</code>
+implies <code class="highlighter-rouge">C</code>, and we know for some <code class="highlighter-rouge">x</code> of type <code class="highlighter-rouge">A</code> that <code class="highlighter-rouge">B x</code> holds,
+then we may conclude that <code class="highlighter-rouge">C</code> holds.  This is because we may
+instantiate that proof that <code class="highlighter-rouge">∀ x → B x → C</code> to any value <code class="highlighter-rouge">x</code> of type
+<code class="highlighter-rouge">A</code> and any <code class="highlighter-rouge">y</code> of type <code class="highlighter-rouge">B x</code>, and exactly such values are provided by
+the evidence for <code class="highlighter-rouge">∃[ x ] B x</code>.</p>
+
+<p>Indeed, the converse also holds, and the two together form an isomorphism:</p>
+<pre class="Agda"><a id="∀∃-currying"></a><a id="7931" href="/Quantifiers/#7931" class="Function">∀∃-currying</a> <a id="7943" class="Symbol">:</a> <a id="7945" class="Symbol">∀</a> <a id="7947" class="Symbol">{</a><a id="7948" href="/Quantifiers/#7948" class="Bound">A</a> <a id="7950" class="Symbol">:</a> <a id="7952" class="PrimitiveType">Set</a><a id="7955" class="Symbol">}</a> <a id="7957" class="Symbol">{</a><a id="7958" href="/Quantifiers/#7958" class="Bound">B</a> <a id="7960" class="Symbol">:</a> <a id="7962" href="/Quantifiers/#7948" class="Bound">A</a> <a id="7964" class="Symbol">→</a> <a id="7966" class="PrimitiveType">Set</a><a id="7969" class="Symbol">}</a> <a id="7971" class="Symbol">{</a><a id="7972" href="/Quantifiers/#7972" class="Bound">C</a> <a id="7974" class="Symbol">:</a> <a id="7976" class="PrimitiveType">Set</a><a id="7979" class="Symbol">}</a>
+  <a id="7983" class="Symbol">→</a> <a id="7985" class="Symbol">(∀</a> <a id="7988" href="/Quantifiers/#7988" class="Bound">x</a> <a id="7990" class="Symbol">→</a> <a id="7992" href="/Quantifiers/#7958" class="Bound">B</a> <a id="7994" href="/Quantifiers/#7988" class="Bound">x</a> <a id="7996" class="Symbol">→</a> <a id="7998" href="/Quantifiers/#7972" class="Bound">C</a><a id="7999" class="Symbol">)</a> <a id="8001" href="/Isomorphism/#4092" class="Record Operator">≃</a> <a id="8003" class="Symbol">(</a><a id="8004" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8007" href="/Quantifiers/#8007" class="Bound">x</a> <a id="8009" href="/Quantifiers/#6936" class="Function">]</a> <a id="8011" href="/Quantifiers/#7958" class="Bound">B</a> <a id="8013" href="/Quantifiers/#8007" class="Bound">x</a> <a id="8015" class="Symbol">→</a> <a id="8017" href="/Quantifiers/#7972" class="Bound">C</a><a id="8018" class="Symbol">)</a>
+<a id="8020" href="/Quantifiers/#7931" class="Function">∀∃-currying</a> <a id="8032" class="Symbol">=</a>
+  <a id="8036" class="Keyword">record</a>
+    <a id="8047" class="Symbol">{</a> <a id="8049" class="Field">to</a>      <a id="8057" class="Symbol">=</a>  <a id="8060" class="Symbol">λ{</a> <a id="8063" href="/Quantifiers/#8063" class="Bound">f</a> <a id="8065" class="Symbol">→</a> <a id="8067" class="Symbol">λ{</a> <a id="8070" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="8072" href="/Quantifiers/#8072" class="Bound">x</a> <a id="8074" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="8076" href="/Quantifiers/#8076" class="Bound">y</a> <a id="8078" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="8080" class="Symbol">→</a> <a id="8082" href="/Quantifiers/#8063" class="Bound">f</a> <a id="8084" href="/Quantifiers/#8072" class="Bound">x</a> <a id="8086" href="/Quantifiers/#8076" class="Bound">y</a> <a id="8088" class="Symbol">}}</a>
+    <a id="8095" class="Symbol">;</a> <a id="8097" class="Field">from</a>    <a id="8105" class="Symbol">=</a>  <a id="8108" class="Symbol">λ{</a> <a id="8111" href="/Quantifiers/#8111" class="Bound">g</a> <a id="8113" class="Symbol">→</a> <a id="8115" class="Symbol">λ{</a> <a id="8118" href="/Quantifiers/#8118" class="Bound">x</a> <a id="8120" class="Symbol">→</a> <a id="8122" class="Symbol">λ{</a> <a id="8125" href="/Quantifiers/#8125" class="Bound">y</a> <a id="8127" class="Symbol">→</a> <a id="8129" href="/Quantifiers/#8111" class="Bound">g</a> <a id="8131" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="8133" href="/Quantifiers/#8118" class="Bound">x</a> <a id="8135" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="8137" href="/Quantifiers/#8125" class="Bound">y</a> <a id="8139" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="8141" class="Symbol">}}}</a>
+    <a id="8149" class="Symbol">;</a> <a id="8151" class="Field">from∘to</a> <a id="8159" class="Symbol">=</a>  <a id="8162" class="Symbol">λ{</a> <a id="8165" href="/Quantifiers/#8165" class="Bound">f</a> <a id="8167" class="Symbol">→</a> <a id="8169" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="8174" class="Symbol">}</a>
+    <a id="8180" class="Symbol">;</a> <a id="8182" class="Field">to∘from</a> <a id="8190" class="Symbol">=</a>  <a id="8193" class="Symbol">λ{</a> <a id="8196" href="/Quantifiers/#8196" class="Bound">g</a> <a id="8198" class="Symbol">→</a> <a id="8200" href="/Isomorphism/#2736" class="Postulate">extensionality</a> <a id="8215" class="Symbol">λ{</a> <a id="8218" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="8220" href="/Quantifiers/#8220" class="Bound">x</a> <a id="8222" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="8224" href="/Quantifiers/#8224" class="Bound">y</a> <a id="8226" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="8228" class="Symbol">→</a> <a id="8230" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="8235" class="Symbol">}}</a>
+    <a id="8242" class="Symbol">}</a></pre>
+<p>The result can be viewed as a generalisation of currying.  Indeed, the code to
+establish the isomorphism is identical to what we wrote when discussing
+<a href="/Connectives/#implication">implication</a>.</p>
+
+<h4 id="exercise--distrib--recommended-1">Exercise <code class="highlighter-rouge">∃-distrib-⊎</code> (recommended)</h4>
+
+<p>Show that existentials distribute over disjunction:</p>
+<pre class="Agda"><a id="8560" class="Keyword">postulate</a>
+  <a id="∃-distrib-⊎"></a><a id="8572" href="/Quantifiers/#8572" class="Postulate">∃-distrib-⊎</a> <a id="8584" class="Symbol">:</a> <a id="8586" class="Symbol">∀</a> <a id="8588" class="Symbol">{</a><a id="8589" href="/Quantifiers/#8589" class="Bound">A</a> <a id="8591" class="Symbol">:</a> <a id="8593" class="PrimitiveType">Set</a><a id="8596" class="Symbol">}</a> <a id="8598" class="Symbol">{</a><a id="8599" href="/Quantifiers/#8599" class="Bound">B</a> <a id="8601" href="/Quantifiers/#8601" class="Bound">C</a> <a id="8603" class="Symbol">:</a> <a id="8605" href="/Quantifiers/#8589" class="Bound">A</a> <a id="8607" class="Symbol">→</a> <a id="8609" class="PrimitiveType">Set</a><a id="8612" class="Symbol">}</a> <a id="8614" class="Symbol">→</a>
+    <a id="8620" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8623" href="/Quantifiers/#8623" class="Bound">x</a> <a id="8625" href="/Quantifiers/#6936" class="Function">]</a> <a id="8627" class="Symbol">(</a><a id="8628" href="/Quantifiers/#8599" class="Bound">B</a> <a id="8630" href="/Quantifiers/#8623" class="Bound">x</a> <a id="8632" href="https://agda.github.io/agda-stdlib/Data.Sum.Base.html#419" class="Datatype Operator">⊎</a> <a id="8634" href="/Quantifiers/#8601" class="Bound">C</a> <a id="8636" href="/Quantifiers/#8623" class="Bound">x</a><a id="8637" class="Symbol">)</a> <a id="8639" href="/Isomorphism/#4092" class="Record Operator">≃</a> <a id="8641" class="Symbol">(</a><a id="8642" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8645" href="/Quantifiers/#8645" class="Bound">x</a> <a id="8647" href="/Quantifiers/#6936" class="Function">]</a> <a id="8649" href="/Quantifiers/#8599" class="Bound">B</a> <a id="8651" href="/Quantifiers/#8645" class="Bound">x</a><a id="8652" class="Symbol">)</a> <a id="8654" href="https://agda.github.io/agda-stdlib/Data.Sum.Base.html#419" class="Datatype Operator">⊎</a> <a id="8656" class="Symbol">(</a><a id="8657" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8660" href="/Quantifiers/#8660" class="Bound">x</a> <a id="8662" href="/Quantifiers/#6936" class="Function">]</a> <a id="8664" href="/Quantifiers/#8601" class="Bound">C</a> <a id="8666" href="/Quantifiers/#8660" class="Bound">x</a><a id="8667" class="Symbol">)</a></pre>
+
+<h4 id="exercise--implies--1">Exercise <code class="highlighter-rouge">∃×-implies-×∃</code></h4>
+
+<p>Show that an existential of conjunctions implies a conjunction of existentials:</p>
+<pre class="Agda"><a id="8805" class="Keyword">postulate</a>
+  <a id="∃×-implies-×∃"></a><a id="8817" href="/Quantifiers/#8817" class="Postulate">∃×-implies-×∃</a> <a id="8831" class="Symbol">:</a> <a id="8833" class="Symbol">∀</a> <a id="8835" class="Symbol">{</a><a id="8836" href="/Quantifiers/#8836" class="Bound">A</a> <a id="8838" class="Symbol">:</a> <a id="8840" class="PrimitiveType">Set</a><a id="8843" class="Symbol">}</a> <a id="8845" class="Symbol">{</a><a id="8846" href="/Quantifiers/#8846" class="Bound">B</a> <a id="8848" href="/Quantifiers/#8848" class="Bound">C</a> <a id="8850" class="Symbol">:</a> <a id="8852" href="/Quantifiers/#8836" class="Bound">A</a> <a id="8854" class="Symbol">→</a> <a id="8856" class="PrimitiveType">Set</a><a id="8859" class="Symbol">}</a> <a id="8861" class="Symbol">→</a>
+    <a id="8867" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8870" href="/Quantifiers/#8870" class="Bound">x</a> <a id="8872" href="/Quantifiers/#6936" class="Function">]</a> <a id="8874" class="Symbol">(</a><a id="8875" href="/Quantifiers/#8846" class="Bound">B</a> <a id="8877" href="/Quantifiers/#8870" class="Bound">x</a> <a id="8879" href="https://agda.github.io/agda-stdlib/Data.Product.html#1353" class="Function Operator">×</a> <a id="8881" href="/Quantifiers/#8848" class="Bound">C</a> <a id="8883" href="/Quantifiers/#8870" class="Bound">x</a><a id="8884" class="Symbol">)</a> <a id="8886" class="Symbol">→</a> <a id="8888" class="Symbol">(</a><a id="8889" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8892" href="/Quantifiers/#8892" class="Bound">x</a> <a id="8894" href="/Quantifiers/#6936" class="Function">]</a> <a id="8896" href="/Quantifiers/#8846" class="Bound">B</a> <a id="8898" href="/Quantifiers/#8892" class="Bound">x</a><a id="8899" class="Symbol">)</a> <a id="8901" href="https://agda.github.io/agda-stdlib/Data.Product.html#1353" class="Function Operator">×</a> <a id="8903" class="Symbol">(</a><a id="8904" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="8907" href="/Quantifiers/#8907" class="Bound">x</a> <a id="8909" href="/Quantifiers/#6936" class="Function">]</a> <a id="8911" href="/Quantifiers/#8848" class="Bound">C</a> <a id="8913" href="/Quantifiers/#8907" class="Bound">x</a><a id="8914" class="Symbol">)</a></pre>
+<p>Does the converse hold? If so, prove; if not, explain why.</p>
+
+<h4 id="exercise---1">Exercise <code class="highlighter-rouge">∃-⊎</code></h4>
+
+<p>Let <code class="highlighter-rouge">Tri</code> and <code class="highlighter-rouge">B</code> be as in Exercise <code class="highlighter-rouge">∀-×</code>.
+Show that <code class="highlighter-rouge">∃[ x ] B x</code> is isomorphic to <code class="highlighter-rouge">B aa ⊎ B bb ⊎ B cc</code>.</p>
+
+<h2 id="an-existential-example">An existential example</h2>
+
+<p>Recall the definitions of <code class="highlighter-rouge">even</code> and <code class="highlighter-rouge">odd</code> from
+Chapter <a href="/Relations/">Relations</a>:</p>
+<pre class="Agda"><a id="9240" class="Keyword">data</a> <a id="even"></a><a id="9245" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="9250" class="Symbol">:</a> <a id="9252" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a> <a id="9254" class="Symbol">→</a> <a id="9256" class="PrimitiveType">Set</a>
+<a id="9260" class="Keyword">data</a> <a id="odd"></a><a id="9265" href="/Quantifiers/#9265" class="Datatype">odd</a>  <a id="9270" class="Symbol">:</a> <a id="9272" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a> <a id="9274" class="Symbol">→</a> <a id="9276" class="PrimitiveType">Set</a>
+
+<a id="9281" class="Keyword">data</a> <a id="9286" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="9291" class="Keyword">where</a>
+
+  <a id="even.even-zero"></a><a id="9300" href="/Quantifiers/#9300" class="InductiveConstructor">even-zero</a> <a id="9310" class="Symbol">:</a> <a id="9312" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="9317" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#115" class="InductiveConstructor">zero</a>
+
+  <a id="even.even-suc"></a><a id="9325" href="/Quantifiers/#9325" class="InductiveConstructor">even-suc</a> <a id="9334" class="Symbol">:</a> <a id="9336" class="Symbol">∀</a> <a id="9338" class="Symbol">{</a><a id="9339" href="/Quantifiers/#9339" class="Bound">n</a> <a id="9341" class="Symbol">:</a> <a id="9343" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="9344" class="Symbol">}</a>
+    <a id="9350" class="Symbol">→</a> <a id="9352" href="/Quantifiers/#9265" class="Datatype">odd</a> <a id="9356" href="/Quantifiers/#9339" class="Bound">n</a>
+      <a id="9364" class="Comment">------------</a>
+    <a id="9381" class="Symbol">→</a> <a id="9383" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="9388" class="Symbol">(</a><a id="9389" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#128" class="InductiveConstructor">suc</a> <a id="9393" href="/Quantifiers/#9339" class="Bound">n</a><a id="9394" class="Symbol">)</a>
+
+<a id="9397" class="Keyword">data</a> <a id="9402" href="/Quantifiers/#9265" class="Datatype">odd</a> <a id="9406" class="Keyword">where</a>
+  <a id="odd.odd-suc"></a><a id="9414" href="/Quantifiers/#9414" class="InductiveConstructor">odd-suc</a> <a id="9422" class="Symbol">:</a> <a id="9424" class="Symbol">∀</a> <a id="9426" class="Symbol">{</a><a id="9427" href="/Quantifiers/#9427" class="Bound">n</a> <a id="9429" class="Symbol">:</a> <a id="9431" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="9432" class="Symbol">}</a>
+    <a id="9438" class="Symbol">→</a> <a id="9440" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="9445" href="/Quantifiers/#9427" class="Bound">n</a>
+      <a id="9453" class="Comment">-----------</a>
+    <a id="9469" class="Symbol">→</a> <a id="9471" href="/Quantifiers/#9265" class="Datatype">odd</a> <a id="9475" class="Symbol">(</a><a id="9476" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#128" class="InductiveConstructor">suc</a> <a id="9480" href="/Quantifiers/#9427" class="Bound">n</a><a id="9481" class="Symbol">)</a></pre>
+<p>A number is even if it is zero or the successor of an odd number, and
+odd if it is the successor of an even number.</p>
+
+<p>We will show that a number is even if and only if it is twice some
+other number, and odd if and only if it is one more than twice
+some other number.  In other words, we will show:</p>
+
+<p><code class="highlighter-rouge">even n</code>   iff   <code class="highlighter-rouge">∃[ m ] (    m * 2 ≡ n)</code></p>
+
+<p><code class="highlighter-rouge">odd  n</code>   iff   <code class="highlighter-rouge">∃[ m ] (1 + m * 2 ≡ n)</code></p>
+
+<p>By convention, one tends to write constant factors first and to put
+the constant term in a sum last. Here we’ve reversed each of those
+conventions, because doing so eases the proof.</p>
+
+<p>Here is the proof in the forward direction:</p>
+<pre class="Agda"><a id="even-∃"></a><a id="10118" href="/Quantifiers/#10118" class="Function">even-∃</a> <a id="10125" class="Symbol">:</a> <a id="10127" class="Symbol">∀</a> <a id="10129" class="Symbol">{</a><a id="10130" href="/Quantifiers/#10130" class="Bound">n</a> <a id="10132" class="Symbol">:</a> <a id="10134" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="10135" class="Symbol">}</a> <a id="10137" class="Symbol">→</a> <a id="10139" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="10144" href="/Quantifiers/#10130" class="Bound">n</a> <a id="10146" class="Symbol">→</a> <a id="10148" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="10151" href="/Quantifiers/#10151" class="Bound">m</a> <a id="10153" href="/Quantifiers/#6936" class="Function">]</a> <a id="10155" class="Symbol">(</a>    <a id="10160" href="/Quantifiers/#10151" class="Bound">m</a> <a id="10162" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#433" class="Primitive Operator">*</a> <a id="10164" class="Number">2</a> <a id="10166" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#83" class="Datatype Operator">≡</a> <a id="10168" href="/Quantifiers/#10130" class="Bound">n</a><a id="10169" class="Symbol">)</a>
+<a id="odd-∃"></a><a id="10171" href="/Quantifiers/#10171" class="Function">odd-∃</a>  <a id="10178" class="Symbol">:</a> <a id="10180" class="Symbol">∀</a> <a id="10182" class="Symbol">{</a><a id="10183" href="/Quantifiers/#10183" class="Bound">n</a> <a id="10185" class="Symbol">:</a> <a id="10187" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="10188" class="Symbol">}</a> <a id="10190" class="Symbol">→</a>  <a id="10193" href="/Quantifiers/#9265" class="Datatype">odd</a> <a id="10197" href="/Quantifiers/#10183" class="Bound">n</a> <a id="10199" class="Symbol">→</a> <a id="10201" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="10204" href="/Quantifiers/#10204" class="Bound">m</a> <a id="10206" href="/Quantifiers/#6936" class="Function">]</a> <a id="10208" class="Symbol">(</a><a id="10209" class="Number">1</a> <a id="10211" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#230" class="Primitive Operator">+</a> <a id="10213" href="/Quantifiers/#10204" class="Bound">m</a> <a id="10215" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#433" class="Primitive Operator">*</a> <a id="10217" class="Number">2</a> <a id="10219" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#83" class="Datatype Operator">≡</a> <a id="10221" href="/Quantifiers/#10183" class="Bound">n</a><a id="10222" class="Symbol">)</a>
+
+<a id="10225" href="/Quantifiers/#10118" class="Function">even-∃</a> <a id="10232" href="/Quantifiers/#9300" class="InductiveConstructor">even-zero</a>                       <a id="10264" class="Symbol">=</a>  <a id="10267" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="10269" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#115" class="InductiveConstructor">zero</a> <a id="10274" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="10276" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="10281" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>
+<a id="10283" href="/Quantifiers/#10118" class="Function">even-∃</a> <a id="10290" class="Symbol">(</a><a id="10291" href="/Quantifiers/#9325" class="InductiveConstructor">even-suc</a> <a id="10300" href="/Quantifiers/#10300" class="Bound">o</a><a id="10301" class="Symbol">)</a> <a id="10303" class="Keyword">with</a> <a id="10308" href="/Quantifiers/#10171" class="Function">odd-∃</a> <a id="10314" href="/Quantifiers/#10300" class="Bound">o</a>
+<a id="10316" class="Symbol">...</a>                    <a id="10339" class="Symbol">|</a> <a id="10341" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="10343" href="/Quantifiers/#10343" class="Bound">m</a> <a id="10345" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="10347" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="10352" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>  <a id="10355" class="Symbol">=</a>  <a id="10358" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="10360" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#128" class="InductiveConstructor">suc</a> <a id="10364" href="/Quantifiers/#10343" class="Bound">m</a> <a id="10366" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="10368" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="10373" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>
+
+<a id="10376" href="/Quantifiers/#10171" class="Function">odd-∃</a>  <a id="10383" class="Symbol">(</a><a id="10384" href="/Quantifiers/#9414" class="InductiveConstructor">odd-suc</a> <a id="10392" href="/Quantifiers/#10392" class="Bound">e</a><a id="10393" class="Symbol">)</a>  <a id="10396" class="Keyword">with</a> <a id="10401" href="/Quantifiers/#10118" class="Function">even-∃</a> <a id="10408" href="/Quantifiers/#10392" class="Bound">e</a>
+<a id="10410" class="Symbol">...</a>                    <a id="10433" class="Symbol">|</a> <a id="10435" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="10437" href="/Quantifiers/#10437" class="Bound">m</a> <a id="10439" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="10441" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="10446" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>  <a id="10449" class="Symbol">=</a>  <a id="10452" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="10454" href="/Quantifiers/#10437" class="Bound">m</a> <a id="10456" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="10458" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="10463" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a></pre>
+<p>We define two mutually recursive functions. Given
+evidence that <code class="highlighter-rouge">n</code> is even or odd, we return a
+number <code class="highlighter-rouge">m</code> and evidence that <code class="highlighter-rouge">m * 2 ≡ n</code> or <code class="highlighter-rouge">1 + m * 2 ≡ n</code>.
+We induct over the evidence that <code class="highlighter-rouge">n</code> is even or odd:</p>
+
+<ul>
+  <li>
+    <p>If the number is even because it is zero, then we return a pair
+consisting of zero and the evidence that twice zero is zero.</p>
+  </li>
+  <li>
+    <p>If the number is even because it is one more than an odd number,
+then we apply the induction hypothesis to give a number <code class="highlighter-rouge">m</code> and
+evidence that <code class="highlighter-rouge">1 + m * 2 ≡ n</code>. We return a pair consisting of <code class="highlighter-rouge">suc m</code>
+and evidence that <code class="highlighter-rouge">suc m * 2 ≡ suc n</code>, which is immediate after
+substituting for <code class="highlighter-rouge">n</code>.</p>
+  </li>
+  <li>
+    <p>If the number is odd because it is the successor of an even number,
+then we apply the induction hypothesis to give a number <code class="highlighter-rouge">m</code> and
+evidence that <code class="highlighter-rouge">m * 2 ≡ n</code>. We return a pair consisting of <code class="highlighter-rouge">suc m</code> and
+evidence that <code class="highlighter-rouge">1 + m * 2 ≡ suc n</code>, which is immediate after
+substituting for <code class="highlighter-rouge">n</code>.</p>
+  </li>
+</ul>
+
+<p>This completes the proof in the forward direction.</p>
+
+<p>Here is the proof in the reverse direction:</p>
+<pre class="Agda"><a id="∃-even"></a><a id="11499" href="/Quantifiers/#11499" class="Function">∃-even</a> <a id="11506" class="Symbol">:</a> <a id="11508" class="Symbol">∀</a> <a id="11510" class="Symbol">{</a><a id="11511" href="/Quantifiers/#11511" class="Bound">n</a> <a id="11513" class="Symbol">:</a> <a id="11515" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="11516" class="Symbol">}</a> <a id="11518" class="Symbol">→</a> <a id="11520" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="11523" href="/Quantifiers/#11523" class="Bound">m</a> <a id="11525" href="/Quantifiers/#6936" class="Function">]</a> <a id="11527" class="Symbol">(</a>    <a id="11532" href="/Quantifiers/#11523" class="Bound">m</a> <a id="11534" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#433" class="Primitive Operator">*</a> <a id="11536" class="Number">2</a> <a id="11538" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#83" class="Datatype Operator">≡</a> <a id="11540" href="/Quantifiers/#11511" class="Bound">n</a><a id="11541" class="Symbol">)</a> <a id="11543" class="Symbol">→</a> <a id="11545" href="/Quantifiers/#9245" class="Datatype">even</a> <a id="11550" href="/Quantifiers/#11511" class="Bound">n</a>
+<a id="∃-odd"></a><a id="11552" href="/Quantifiers/#11552" class="Function">∃-odd</a>  <a id="11559" class="Symbol">:</a> <a id="11561" class="Symbol">∀</a> <a id="11563" class="Symbol">{</a><a id="11564" href="/Quantifiers/#11564" class="Bound">n</a> <a id="11566" class="Symbol">:</a> <a id="11568" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#97" class="Datatype">ℕ</a><a id="11569" class="Symbol">}</a> <a id="11571" class="Symbol">→</a> <a id="11573" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="11576" href="/Quantifiers/#11576" class="Bound">m</a> <a id="11578" href="/Quantifiers/#6936" class="Function">]</a> <a id="11580" class="Symbol">(</a><a id="11581" class="Number">1</a> <a id="11583" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#230" class="Primitive Operator">+</a> <a id="11585" href="/Quantifiers/#11576" class="Bound">m</a> <a id="11587" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#433" class="Primitive Operator">*</a> <a id="11589" class="Number">2</a> <a id="11591" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#83" class="Datatype Operator">≡</a> <a id="11593" href="/Quantifiers/#11564" class="Bound">n</a><a id="11594" class="Symbol">)</a> <a id="11596" class="Symbol">→</a>  <a id="11599" href="/Quantifiers/#9265" class="Datatype">odd</a> <a id="11603" href="/Quantifiers/#11564" class="Bound">n</a>
+
+<a id="11606" href="/Quantifiers/#11499" class="Function">∃-even</a> <a id="11613" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a>  <a id="11616" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#115" class="InductiveConstructor">zero</a> <a id="11621" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="11623" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="11628" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>  <a id="11631" class="Symbol">=</a>  <a id="11634" href="/Quantifiers/#9300" class="InductiveConstructor">even-zero</a>
+<a id="11644" href="/Quantifiers/#11499" class="Function">∃-even</a> <a id="11651" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="11653" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Nat.html#128" class="InductiveConstructor">suc</a> <a id="11657" href="/Quantifiers/#11657" class="Bound">m</a> <a id="11659" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="11661" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="11666" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>  <a id="11669" class="Symbol">=</a>  <a id="11672" href="/Quantifiers/#9325" class="InductiveConstructor">even-suc</a> <a id="11681" class="Symbol">(</a><a id="11682" href="/Quantifiers/#11552" class="Function">∃-odd</a> <a id="11688" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="11690" href="/Quantifiers/#11657" class="Bound">m</a> <a id="11692" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="11694" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="11699" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a><a id="11700" class="Symbol">)</a>
+
+<a id="11703" href="/Quantifiers/#11552" class="Function">∃-odd</a>  <a id="11710" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a>     <a id="11716" href="/Quantifiers/#11716" class="Bound">m</a> <a id="11718" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="11720" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="11725" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a>  <a id="11728" class="Symbol">=</a>  <a id="11731" href="/Quantifiers/#9414" class="InductiveConstructor">odd-suc</a> <a id="11739" class="Symbol">(</a><a id="11740" href="/Quantifiers/#11499" class="Function">∃-even</a> <a id="11747" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="11749" href="/Quantifiers/#11716" class="Bound">m</a> <a id="11751" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="11753" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="11758" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a><a id="11759" class="Symbol">)</a></pre>
+<p>Given a number that is twice some other number we must show it is
+even, and a number that is one more than twice some other number we
+must show it is odd.  We induct over the evidence of the existential,
+and in the even case consider the two possibilities for the number
+that is doubled:</p>
+
+<ul>
+  <li>
+    <p>In the even case for <code class="highlighter-rouge">zero</code>, we must show <code class="highlighter-rouge">zero * 2</code> is even, which
+follows by <code class="highlighter-rouge">even-zero</code>.</p>
+  </li>
+  <li>
+    <p>In the even case for <code class="highlighter-rouge">suc n</code>, we must show <code class="highlighter-rouge">suc m * 2</code> is even.  The
+inductive hypothesis tells us that <code class="highlighter-rouge">1 + m * 2</code> is odd, from which the
+desired result follows by <code class="highlighter-rouge">even-suc</code>.</p>
+  </li>
+  <li>
+    <p>In the odd case, we must show <code class="highlighter-rouge">1 + m * 2</code> is odd.  The inductive
+hypothesis tell us that <code class="highlighter-rouge">m * 2</code> is even, from which the desired result
+follows by <code class="highlighter-rouge">odd-suc</code>.</p>
+  </li>
+</ul>
+
+<p>This completes the proof in the backward direction.</p>
+
+<h4 id="exercise--even-odd">Exercise <code class="highlighter-rouge">∃-even-odd</code></h4>
+
+<p>How do the proofs become more difficult if we replace <code class="highlighter-rouge">m * 2</code> and <code class="highlighter-rouge">1 + m * 2</code>
+by <code class="highlighter-rouge">2 * m</code> and <code class="highlighter-rouge">2 * m + 1</code>?  Rewrite the proofs of <code class="highlighter-rouge">∃-even</code> and <code class="highlighter-rouge">∃-odd</code> when
+restated in this way.</p>
+
+<pre class="Agda"><a id="12769" class="Comment">-- Your code goes here</a></pre>
+
+<h4 id="exercise---">Exercise <code class="highlighter-rouge">∃-+-≤</code></h4>
+
+<p>Show that <code class="highlighter-rouge">y ≤ z</code> holds if and only if there exists a <code class="highlighter-rouge">x</code> such that
+<code class="highlighter-rouge">x + y ≡ z</code>.</p>
+
+<pre class="Agda"><a id="12922" class="Comment">-- Your code goes here</a></pre>
+
+<h2 id="existentials-universals-and-negation">Existentials, Universals, and Negation</h2>
+
+<p>Negation of an existential is isomorphic to the universal
+of a negation.  Considering that existentials are generalised
+disjunction and universals are generalised conjunction, this
+result is analogous to the one which tells us that negation
+of a disjunction is isomorphic to a conjunction of negations:</p>
+<pre class="Agda"><a id="¬∃≃∀¬"></a><a id="13317" href="/Quantifiers/#13317" class="Function">¬∃≃∀¬</a> <a id="13323" class="Symbol">:</a> <a id="13325" class="Symbol">∀</a> <a id="13327" class="Symbol">{</a><a id="13328" href="/Quantifiers/#13328" class="Bound">A</a> <a id="13330" class="Symbol">:</a> <a id="13332" class="PrimitiveType">Set</a><a id="13335" class="Symbol">}</a> <a id="13337" class="Symbol">{</a><a id="13338" href="/Quantifiers/#13338" class="Bound">B</a> <a id="13340" class="Symbol">:</a> <a id="13342" href="/Quantifiers/#13328" class="Bound">A</a> <a id="13344" class="Symbol">→</a> <a id="13346" class="PrimitiveType">Set</a><a id="13349" class="Symbol">}</a>
+  <a id="13353" class="Symbol">→</a> <a id="13355" class="Symbol">(</a><a id="13356" href="https://agda.github.io/agda-stdlib/Relation.Nullary.html#464" class="Function Operator">¬</a> <a id="13358" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="13361" href="/Quantifiers/#13361" class="Bound">x</a> <a id="13363" href="/Quantifiers/#6936" class="Function">]</a> <a id="13365" href="/Quantifiers/#13338" class="Bound">B</a> <a id="13367" href="/Quantifiers/#13361" class="Bound">x</a><a id="13368" class="Symbol">)</a> <a id="13370" href="/Isomorphism/#4092" class="Record Operator">≃</a> <a id="13372" class="Symbol">∀</a> <a id="13374" href="/Quantifiers/#13374" class="Bound">x</a> <a id="13376" class="Symbol">→</a> <a id="13378" href="https://agda.github.io/agda-stdlib/Relation.Nullary.html#464" class="Function Operator">¬</a> <a id="13380" href="/Quantifiers/#13338" class="Bound">B</a> <a id="13382" href="/Quantifiers/#13374" class="Bound">x</a>
+<a id="13384" href="/Quantifiers/#13317" class="Function">¬∃≃∀¬</a> <a id="13390" class="Symbol">=</a>
+  <a id="13394" class="Keyword">record</a>
+    <a id="13405" class="Symbol">{</a> <a id="13407" class="Field">to</a>      <a id="13415" class="Symbol">=</a>  <a id="13418" class="Symbol">λ{</a> <a id="13421" href="/Quantifiers/#13421" class="Bound">¬∃xy</a> <a id="13426" href="/Quantifiers/#13426" class="Bound">x</a> <a id="13428" href="/Quantifiers/#13428" class="Bound">y</a> <a id="13430" class="Symbol">→</a> <a id="13432" href="/Quantifiers/#13421" class="Bound">¬∃xy</a> <a id="13437" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="13439" href="/Quantifiers/#13426" class="Bound">x</a> <a id="13441" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="13443" href="/Quantifiers/#13428" class="Bound">y</a> <a id="13445" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="13447" class="Symbol">}</a>
+    <a id="13453" class="Symbol">;</a> <a id="13455" class="Field">from</a>    <a id="13463" class="Symbol">=</a>  <a id="13466" class="Symbol">λ{</a> <a id="13469" href="/Quantifiers/#13469" class="Bound">∀¬xy</a> <a id="13474" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="13476" href="/Quantifiers/#13476" class="Bound">x</a> <a id="13478" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="13480" href="/Quantifiers/#13480" class="Bound">y</a> <a id="13482" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="13484" class="Symbol">→</a> <a id="13486" href="/Quantifiers/#13469" class="Bound">∀¬xy</a> <a id="13491" href="/Quantifiers/#13476" class="Bound">x</a> <a id="13493" href="/Quantifiers/#13480" class="Bound">y</a> <a id="13495" class="Symbol">}</a>
+    <a id="13501" class="Symbol">;</a> <a id="13503" class="Field">from∘to</a> <a id="13511" class="Symbol">=</a>  <a id="13514" class="Symbol">λ{</a> <a id="13517" href="/Quantifiers/#13517" class="Bound">¬∃xy</a> <a id="13522" class="Symbol">→</a> <a id="13524" href="/Isomorphism/#2736" class="Postulate">extensionality</a> <a id="13539" class="Symbol">λ{</a> <a id="13542" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟨</a> <a id="13544" href="/Quantifiers/#13544" class="Bound">x</a> <a id="13546" href="/Quantifiers/#4507" class="InductiveConstructor Operator">,</a> <a id="13548" href="/Quantifiers/#13548" class="Bound">y</a> <a id="13550" href="/Quantifiers/#4507" class="InductiveConstructor Operator">⟩</a> <a id="13552" class="Symbol">→</a> <a id="13554" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="13559" class="Symbol">}</a> <a id="13561" class="Symbol">}</a>
+    <a id="13567" class="Symbol">;</a> <a id="13569" class="Field">to∘from</a> <a id="13577" class="Symbol">=</a>  <a id="13580" class="Symbol">λ{</a> <a id="13583" href="/Quantifiers/#13583" class="Bound">∀¬xy</a> <a id="13588" class="Symbol">→</a> <a id="13590" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Equality.html#140" class="InductiveConstructor">refl</a> <a id="13595" class="Symbol">}</a>
+    <a id="13601" class="Symbol">}</a></pre>
+<p>In the <code class="highlighter-rouge">to</code> direction, we are given a value <code class="highlighter-rouge">¬∃xy</code> of type
+<code class="highlighter-rouge">¬ ∃[ x ] B x</code>, and need to show that given a value
+<code class="highlighter-rouge">x</code> that <code class="highlighter-rouge">¬ B x</code> follows, in other words, from
+a value <code class="highlighter-rouge">y</code> of type <code class="highlighter-rouge">B x</code> we can derive false.  Combining
+<code class="highlighter-rouge">x</code> and <code class="highlighter-rouge">y</code> gives us a value <code class="highlighter-rouge">⟨ x , y ⟩</code> of type <code class="highlighter-rouge">∃[ x ] B x</code>,
+and applying <code class="highlighter-rouge">¬∃xy</code> to that yields a contradiction.</p>
+
+<p>In the <code class="highlighter-rouge">from</code> direction, we are given a value <code class="highlighter-rouge">∀¬xy</code> of type
+<code class="highlighter-rouge">∀ x → ¬ B x</code>, and need to show that from a value <code class="highlighter-rouge">⟨ x , y ⟩</code>
+of type <code class="highlighter-rouge">∃[ x ] B x</code> we can derive false.  Applying <code class="highlighter-rouge">∀¬xy</code>
+to <code class="highlighter-rouge">x</code> gives a value of type <code class="highlighter-rouge">¬ B x</code>, and applying that to <code class="highlighter-rouge">y</code> yields
+a contradiction.</p>
+
+<p>The two inverse proofs are straightforward, where one direction
+requires extensionality.</p>
+
+<h4 id="exercise--implies--recommended">Exercise <code class="highlighter-rouge">∃¬-implies-¬∀</code> (recommended)</h4>
+
+<p>Show that existential of a negation implies negation of a universal:</p>
+<pre class="Agda"><a id="14434" class="Keyword">postulate</a>
+  <a id="∃¬-implies-¬∀"></a><a id="14446" href="/Quantifiers/#14446" class="Postulate">∃¬-implies-¬∀</a> <a id="14460" class="Symbol">:</a> <a id="14462" class="Symbol">∀</a> <a id="14464" class="Symbol">{</a><a id="14465" href="/Quantifiers/#14465" class="Bound">A</a> <a id="14467" class="Symbol">:</a> <a id="14469" class="PrimitiveType">Set</a><a id="14472" class="Symbol">}</a> <a id="14474" class="Symbol">{</a><a id="14475" href="/Quantifiers/#14475" class="Bound">B</a> <a id="14477" class="Symbol">:</a> <a id="14479" href="/Quantifiers/#14465" class="Bound">A</a> <a id="14481" class="Symbol">→</a> <a id="14483" class="PrimitiveType">Set</a><a id="14486" class="Symbol">}</a>
+    <a id="14492" class="Symbol">→</a> <a id="14494" href="/Quantifiers/#6936" class="Function">∃[</a> <a id="14497" href="/Quantifiers/#14497" class="Bound">x</a> <a id="14499" href="/Quantifiers/#6936" class="Function">]</a> <a id="14501" class="Symbol">(</a><a id="14502" href="https://agda.github.io/agda-stdlib/Relation.Nullary.html#464" class="Function Operator">¬</a> <a id="14504" href="/Quantifiers/#14475" class="Bound">B</a> <a id="14506" href="/Quantifiers/#14497" class="Bound">x</a><a id="14507" class="Symbol">)</a>
+      <a id="14515" class="Comment">--------------</a>
+    <a id="14534" class="Symbol">→</a> <a id="14536" href="https://agda.github.io/agda-stdlib/Relation.Nullary.html#464" class="Function Operator">¬</a> <a id="14538" class="Symbol">(∀</a> <a id="14541" href="/Quantifiers/#14541" class="Bound">x</a> <a id="14543" class="Symbol">→</a> <a id="14545" href="/Quantifiers/#14475" class="Bound">B</a> <a id="14547" href="/Quantifiers/#14541" class="Bound">x</a><a id="14548" class="Symbol">)</a></pre>
+<p>Does the converse hold? If so, prove; if not, explain why.</p>
+
+<h4 id="Bin-isomorphism">Exercise <code class="highlighter-rouge">Bin-isomorphism</code> (stretch)</h4>
+
+<p>Recall that Exercises
+<a href="/Naturals/#Bin">Bin</a>,
+<a href="/Induction/#Bin-laws">Bin-laws</a>, and
+<a href="/Relations/#Bin-predicates">Bin-predicates</a>
+define a datatype of bitstrings representing natural numbers:</p>
+<pre class="Agda"><a id="14896" class="Keyword">data</a> <a id="Bin"></a><a id="14901" href="/Quantifiers/#14901" class="Datatype">Bin</a> <a id="14905" class="Symbol">:</a> <a id="14907" class="PrimitiveType">Set</a> <a id="14911" class="Keyword">where</a>
+  <a id="Bin.nil"></a><a id="14919" href="/Quantifiers/#14919" class="InductiveConstructor">nil</a> <a id="14923" class="Symbol">:</a> <a id="14925" href="/Quantifiers/#14901" class="Datatype">Bin</a>
+  <a id="Bin.x0_"></a><a id="14931" href="/Quantifiers/#14931" class="InductiveConstructor Operator">x0_</a> <a id="14935" class="Symbol">:</a> <a id="14937" href="/Quantifiers/#14901" class="Datatype">Bin</a> <a id="14941" class="Symbol">→</a> <a id="14943" href="/Quantifiers/#14901" class="Datatype">Bin</a>
+  <a id="Bin.x1_"></a><a id="14949" href="/Quantifiers/#14949" class="InductiveConstructor Operator">x1_</a> <a id="14953" class="Symbol">:</a> <a id="14955" href="/Quantifiers/#14901" class="Datatype">Bin</a> <a id="14959" class="Symbol">→</a> <a id="14961" href="/Quantifiers/#14901" class="Datatype">Bin</a></pre>
+<p>And ask you to define the following functions and predicates:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>to   : ℕ → Bin
+from : Bin → ℕ
+Can  : Bin → Set
+</code></pre></div></div>
+
+<p>And to establish the following properties:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>from (to n) ≡ n
+
+----------
+Can (to n)
+
+Can x
+---------------
+to (from x) ≡ x
+</code></pre></div></div>
+
+<p>Using the above, establish that there is an isomorphism between <code class="highlighter-rouge">ℕ</code> and
+<code class="highlighter-rouge">∃[ x ](Can x)</code>.</p>
+
+<pre class="Agda"><a id="15349" class="Comment">-- Your code goes here</a></pre>
+
+<h2 id="standard-library">Standard library</h2>
+
+<p>Definitions similar to those in this chapter can be found in the standard library:</p>
+<pre class="Agda"><a id="15502" class="Keyword">import</a> <a id="15509" href="https://agda.github.io/agda-stdlib/Data.Product.html" class="Module">Data.Product</a> <a id="15522" class="Keyword">using</a> <a id="15528" class="Symbol">(</a><a id="15529" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Sigma.html#69" class="Record">Σ</a><a id="15530" class="Symbol">;</a> <a id="15532" href="https://agda.github.io/agda-stdlib/Agda.Builtin.Sigma.html#139" class="InductiveConstructor Operator">_,_</a><a id="15535" class="Symbol">;</a> <a id="15537" href="https://agda.github.io/agda-stdlib/Data.Product.html#881" class="Function">∃</a><a id="15538" class="Symbol">;</a> <a id="15540" href="https://agda.github.io/agda-stdlib/Data.Product.html#764" class="Function">Σ-syntax</a><a id="15548" class="Symbol">;</a> <a id="15550" href="https://agda.github.io/agda-stdlib/Data.Product.html#942" class="Function">∃-syntax</a><a id="15558" class="Symbol">)</a></pre>
+
+<h2 id="unicode">Unicode</h2>
+
+<p>This chapter uses the following unicode:</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Π  U+03A0  GREEK CAPITAL LETTER PI (\Pi)
+Σ  U+03A3  GREEK CAPITAL LETTER SIGMA (\Sigma)
+∃  U+2203  THERE EXISTS (\ex, \exists)
+</code></pre></div></div>
+
+  </div>
+
+  <p style="text-align:center;">
+    
+    <a alt="Previous chapter" href="/Negation/">Prev</a>
+    &bullet;
+    
+    
+    <a alt="Source code" href="https://github.com/plfa/plfa.github.io/blob/dev/src/plfa/Quantifiers.lagda">Source</a>
+    
+    
+    &bullet;
+    <a alt="Next chapter" href="/Decidable/">Next</a>
+    
+</p>
+
+
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Programming Language Foundations in Agda
+</h2><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Philip Wadler</li>
+          <li><a class="u-email" href="mailto:wadler@inf.ed.ac.uk">wadler@inf.ed.ac.uk</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wadler"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wadler</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div><div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Wen Kokke</li>
+          <li><a class="u-email" href="mailto:wen.kokke@ed.ac.uk">wen.kokke@ed.ac.uk</a></li>
+        </ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#github"></use></svg> <span class="username">wenkokke</span></a></li><li><a href="https://www.twitter.com/wenkokke"><svg class="svg-icon"><use xlink:href="/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">wenkokke</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3"></div>
+    </div>This work is licensed under a <a rel="license" href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International License</a>
+  </div>
+</footer>
+<!-- Import jQuery -->
+<script type="text/javascript" src="/assets/jquery.js"></script>
+
+<!-- Script which allows for foldable code blocks -->
+<script type="text/javascript">
+ $('div.foldable pre').each(function(){
+     var autoHeight = $(this).height();
+     var lineHeight = parseFloat($(this).css('line-height'));
+
+     var plus    = $("<div></div>");
+     var horLine = $("<div></div>");
+     var verLine = $("<div></div>");
+     $(this).prepend(plus);
+     plus.css({
+         'position'         : 'relative',
+         'float'            : 'right',
+         'right'            : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'width'            : lineHeight,
+         'height'           : lineHeight});
+     verLine.css({
+         'position'         : 'relative',
+         'height'           : lineHeight,
+         'width'            : '3px',
+         'background-color' : '#C1E0FF'});
+     horLine.css({
+         'position'         : 'relative',
+         'top'              : '-' + (0.5 * lineHeight + 1.5) + 'px',
+         'left'             : '-' + (0.5 * lineHeight - 1.5) + 'px',
+         'height'           : '3px',
+         'width'            : lineHeight,
+         'background-color' : '#C1E0FF'});
+     plus.append(verLine);
+     plus.append(horLine);
+
+     $(this).height(2.0 * lineHeight);
+     $(this).css('overflow','hidden');
+
+     $(this).click(function(){
+         if ($(this).height() == autoHeight) {
+             $(this).height(2.0 * lineHeight);
+             plus.show();
+         }
+         else {
+             $(this).height('auto');
+             plus.hide();
+         }
+     });
+ });
+</script>
+
+<!-- Import KaTeX -->
+<script type="text/javascript" src="/assets/katex.js"></script>
+
+<!-- Script which renders TeX using KaTeX -->
+<script type="text/javascript">
+ $("script[type='math/tex']").replaceWith(
+     function(){
+         var tex = $(this).text();
+         return "<span class=\"inline-equation\">" +
+                katex.renderToString(tex) +
+                "</span>";
+     });
+ $("script[type='math/tex; mode=display']").replaceWith(
+     function(){
+         var tex = $(this).text().replace(/%.*?(\n|$)/g,"");
+         return "<div class=\"equation\">" +
+                katex.renderToString("\\displaystyle "+tex) +
+                "</div>";
+     });
+</script>
+</body>
+
+</html>
